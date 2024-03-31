@@ -53,10 +53,19 @@ class GASelector(object):
         #     print(len(item.vector_male), len(item.vector_female))
 
     def crossover(self):
+        for item in self.solutions:
+            if random.
         pass
 
     def mutation(self):
-        pass
+        for item in self.solutions:
+            if random.random()>self.pm:
+                continue
+            two_pos = random.choices(range(len(item.vector_female)), k=2)
+            m0, f0 = item.get_pair(two_pos[0])
+            m1, f1 = item.get_pair(two_pos[1])
+            item.set_pair(two_pos[0], m1, f1)
+            item.set_pair(two_pos[1], m0, f0)
 
     def elite_reverve(self):
         pass
