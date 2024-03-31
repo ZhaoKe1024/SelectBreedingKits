@@ -1,1 +1,3 @@
 .gitattributes
+*.pyc
+/__pycache__

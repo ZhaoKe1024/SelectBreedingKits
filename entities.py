@@ -6,7 +6,7 @@
 # @Software: PyCharm
 import random
 from typing import List
-from SelectBreeding.func import get_new_id, get_rand_gender
+from func import get_new_id, get_rand_gender
 
 
 class Poultry(object):
@@ -51,12 +51,33 @@ class Poultry(object):
 
 
 class MateSolution(object):
-    def __init__(self):
-        self.mate_dict = set()
-        self.kinship_matrix = None
+    def __init__(self, male_idxs: List, female_per: int):
+        """
+
+        :param male_idxs: it must given the indices of male poultry.
+        :param female_per: how many female individuals need to allocate to male poultry.
+        """
+        self.vector_male = [val for val in male_idxs for _ in range(female_per)]
+        self.vector_female = None
+
+        # self.mate_dict = set()
+        # self.kinship_matrix = None
 
     def add_pair(self):
         pass
+
+    def get_pair(self, ind):
+        return self.vector_male[ind], self.vector_female[ind]
+
+    def set_pair(self, ind, male_x, female_x) -> None:
+        """use to single mutation"""
+        self.vector_male[ind] = male_x
+        self.vector_female[ind] = female_x
+
+    def set_pair_slice(self, ind_s, ind_e, male_array, female_array):
+        """use to crossover"""
+        self.vector_male[ind_s:ind_e+1] = male_array
+        self.vector_female[ind_s:ind_e + 1] = female_array
 
 
 class Stack(object):
