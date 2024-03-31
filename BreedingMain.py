@@ -5,16 +5,14 @@
 # @File : BreedingMain.py
 # @Software: PyCharm
 import random
-from copy import deepcopy, copy
-
+from copy import deepcopy
 import numpy as np
-
-from entities import Poultry, MateSolution
+from entities import MateSolution
 from xlsxreader import read_population_from_xlsx
 
 
 class GASelector(object):
-    def __init__(self, popus, male_idxs, female_idxs):
+    def __init__(self, popus, male_idxs, female_idxs, kinship_matrix):
         self.num_population = 30
         self.pm, self.cm = 0.1, 0.9
         self.num_iter = 300
@@ -33,6 +31,8 @@ class GASelector(object):
         for ind in self.female_idxs:
             self.female_poultries.append(popus[ind])
 
+        self.kinship_matrix = kinship_matrix
+
         self.solutions = []
 
     def __generate_one_solution(self):
@@ -49,15 +49,42 @@ class GASelector(object):
     def init_population(self):
         for _ in range(self.num_population):
             self.solutions.append(self.__generate_one_solution())
-        for item in self.solutions:
-            print(len(item.vector_male), len(item.vector_female))
+        # for item in self.solutions:
+        #     print(len(item.vector_male), len(item.vector_female))
+
+    def crossover(self):
+        pass
+
+    def mutation(self):
+        pass
+
+    def elite_reverve(self):
+        pass
+
+    def select(self):
+        pass
+
+    def scheduler(self):
+        self.init_population()
+        for iter_idx in range(self.num_iter):
+            for solution in self.solutions:
+                # calculate population inbreed coefficient by 有效 population 含量
+                pass
+                self.elite_reverve()
+                self.crossover()
+                self.mutation()
+                self.select()
+                # 排序
+                # 更新最优个体
 
 
 def run_main():
     popus, male_idxs, female_idxs = read_population_from_xlsx()
-    GASelector = GASelector(popus=popus, male_idxs=male_idxs, female_idxs=female_idxs)
-    GASelector.init_population()
+    kinship_matrix = 1/16 + 1/16 * np.random.randn(30, 300)
+    GAS = GASelector(popus=popus, male_idxs=male_idxs, female_idxs=female_idxs, kinship_matrix=kinship_matrix)
+    GAS.scheduler()
 
 
 if __name__ == '__main__':
-    run_main()
+    # run_main()
+    print(np.random.randn(2, 10))

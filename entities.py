@@ -60,6 +60,8 @@ class MateSolution(object):
         self.vector_male = [val for val in male_idxs for _ in range(female_per)]
         self.vector_female = None
 
+        self.fitness_value = None
+
         # self.mate_dict = set()
         # self.kinship_matrix = None
 
@@ -78,6 +80,7 @@ class MateSolution(object):
         """use to crossover"""
         self.vector_male[ind_s:ind_e+1] = male_array
         self.vector_female[ind_s:ind_e + 1] = female_array
+
 
 
 class Stack(object):
