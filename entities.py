@@ -110,7 +110,7 @@ def calculate_fitness(so: MateSolution, kinship: List[List]) -> float:
     for male_item in so.vector_male:
         for female_item in so.vector_female:
             res += kinship[male_item][female_item]
-            
+    return res
 
 
 def calculate_inbreed_coef(fa, ma):

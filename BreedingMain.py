@@ -14,7 +14,7 @@ from xlsxreader import read_population_from_xlsx
 class GASelector(object):
     def __init__(self, popus, male_idxs, female_idxs, kinship_matrix):
         self.num_population = 30
-        self.pm, self.cm = 0.1, 0.9
+        self.pm, self.pc = 0.1, 0.9
         self.num_iter = 300
 
         self.popus = popus
@@ -52,12 +52,22 @@ class GASelector(object):
         # for item in self.solutions:
         #     print(len(item.vector_male), len(item.vector_female))
 
-    def crossover(self):
-        for item in self.solutions:
-            if random.
-        pass
+    def crossover(self, g1, g2):
+        two_pos = random.choices(range(len(g1.vector_female)), k=2)
+        mi, ma = -1, -1
+        if two_pos[0] > two_pos[1]:
+            mi, ma = two_pos[1], two_pos[0]
+        else:
+            mi, ma = two_pos[0], two_pos[1]
+        new_g1, new_g2 = deepcopy(g1), deepcopy(g2)
+        for j in range(mi, ma+1):
+            m0, f0 = g1.get_pair(two_pos[0])
+            m1, f1 = g2.get_pair(two_pos[1])
+            new_g1.set_pair(j, m1, f1)
+            new_g2.set_pair(j, m0, f0)
+        return new_g1, new_g2
 
-    def mutation(self):
+    def mutation(self, g):
         for item in self.solutions:
             if random.random()>self.pm:
                 continue
@@ -67,11 +77,23 @@ class GASelector(object):
             item.set_pair(two_pos[0], m1, f1)
             item.set_pair(two_pos[1], m0, f0)
 
-    def elite_reverve(self):
+    def elite_reserve(self):
+        """
+        reserve the best individual
+        :return:
+        """
         pass
 
-    def select(self):
-        pass
+    def select(self, cumsum_fitnesses):
+        """
+        select the individuals accroding to the fitness values
+        :return:
+        """
+        print(cumsum_fitnesses)
+        L = len(cumsum_fitnesses)
+        for i in range(L):
+            if random.random() > cumsum_fitnesses[L-i-1]:
+                self.solutions.pop(index=L-i-1)
 
     def scheduler(self):
         self.init_population()
@@ -79,12 +101,46 @@ class GASelector(object):
             for solution in self.solutions:
                 # calculate population inbreed coefficient by 有效 population 含量
                 solution.fitness_value = calculate_fitness(solution, self.kinship_matrix)
-            self.elite_reverve()
-            self.crossover()
-            self.mutation()
-            self.select()
-                # 排序
-                # 更新最优个体
+            # self.elite_reserve()
+
+            self.solutions.sort(key=lambda x: x.fitness_value)
+            fitness_list = [item.fitness_value for item in self.solutions]
+            cumsum_fitnesses = np.cumsum(fitness_list)
+
+            self.select(cumsum_fitnesses)
+
+            L = len(self.solutions)
+
+            g1_tmp, g2_tmp = -1, -1
+            idx = 0
+            while idx < L:
+                if random.random() < self.pc:
+                    if g1_tmp < 0:
+                        g1_tmp = idx
+                    elif g2_tmp < 0:
+                        g2_tmp = idx
+                    else:
+                        new_g1, newg2 = self.crossover(self.solutions[g1_tmp], self.solutions[g2_tmp])
+                        self.solutions.append(new_g1)
+                        self.solutions.append(new_g2)
+                        g1_tmp, g2_tmp = -1, -1
+                idx += 1
+
+            idx = 0
+            while idx < L:
+                if random.random() < self.pm:
+                    new_individual = self.mutation(self.solutions[idx])
+                    self.solutions.append(new_individual)
+                idx += 1
+        best_solution = None
+        best_fitness = np.inf
+        for solution in self.solutions:
+            # calculate population inbreed coefficient by 有效 population 含量
+            fvalue = calculate_fitness(solution, self.kinship_matrix)
+            if fvalue < best_fitness:
+                best_fitness = fvalue
+                best_solution = solution
+        print("best fv:", best_fitness)
 
 
 def run_main():
