@@ -7,7 +7,7 @@
 import random
 from copy import deepcopy
 import numpy as np
-from entities import MateSolution
+from entities import MateSolution, calculate_fitness
 from xlsxreader import read_population_from_xlsx
 
 
@@ -78,11 +78,11 @@ class GASelector(object):
         for iter_idx in range(self.num_iter):
             for solution in self.solutions:
                 # calculate population inbreed coefficient by 有效 population 含量
-                pass
-                self.elite_reverve()
-                self.crossover()
-                self.mutation()
-                self.select()
+                solution.fitness_value = calculate_fitness(solution, self.kinship_matrix)
+            self.elite_reverve()
+            self.crossover()
+            self.mutation()
+            self.select()
                 # 排序
                 # 更新最优个体
 

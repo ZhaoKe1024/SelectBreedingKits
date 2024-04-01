@@ -82,7 +82,6 @@ class MateSolution(object):
         self.vector_female[ind_s:ind_e + 1] = female_array
 
 
-
 class Stack(object):
     def __init__(self):
         self.items = []
@@ -104,6 +103,14 @@ class Stack(object):
             res.append(self.items[self.cur-i-1].wing_id)
         print(res)
         # return res
+
+
+def calculate_fitness(so: MateSolution, kinship: List[List]) -> float:
+    res = 0.0
+    for male_item in so.vector_male:
+        for female_item in so.vector_female:
+            res += kinship[male_item][female_item]
+            
 
 
 def calculate_inbreed_coef(fa, ma):
