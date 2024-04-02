@@ -54,32 +54,68 @@ class GASelector(object):
         # for item in self.solutions:
         #     print(len(item.vector_male), len(item.vector_female))
 
-    def crossover(self, g1, g2):
-        two_pos = random.choices(range(len(g1.vector_female)), k=2)
-        mi, ma = -1, -1
-        if two_pos[0] > two_pos[1]:
-            mi, ma = two_pos[1], two_pos[0]
-        else:
-            mi, ma = two_pos[0], two_pos[1]
-        new_g1, new_g2 = deepcopy(g1), deepcopy(g2)
-        for j in range(mi, ma+1):
-            m0, f0 = g1.get_pair(two_pos[0])
-            m1, f1 = g2.get_pair(two_pos[1])
-            new_g1.set_pair(j, m1, f1)
-            new_g2.set_pair(j, m0, f0)
-        return new_g1, new_g2
+    def crossover(self):
+        """
+        unique crossover
+        :return:
+        """
+        idx, L = 0, len(self.solutions)
+        g1_idx, g2_idx = -1, -1
+        while idx < L:
+            if random.random() < self.pc:
+                if g1_idx < 0:
+                    g1_idx = idx
+                elif g2_idx < 0:
+                    g2_idx = idx
+                else:
+                    g1_tmp, g2_tmp = self.solutions[g1_idx], self.solutions[g2_idx]
+                    g1_tmp.sort_vector(by=0)
+                    g2_tmp.sort_vector(by=0)
+                    # print("============================")
+                    # print("----------------------------")
+                    # print(g1_tmp.vector_male)
+                    # print(g1_tmp.vector_female)
+                    # print(g2_tmp.vector_male)
+                    # print(g2_tmp.vector_female)
 
-    def mutation(self, g):
-        new_g = deepcopy(g)
-        for item in self.solutions:
-            if random.random() > self.pm:
-                continue
-            two_pos = random.choices(range(len(item)), k=2)
-            m0, f0 = item.get_pair(two_pos[0])
-            m1, f1 = item.get_pair(two_pos[1])
-            new_g.set_pair(two_pos[0], m1, f1)
-            new_g.set_pair(two_pos[1], m0, f0)
-        return new_g
+                    two_pos = random.choices(range(len(g1_tmp)), k=2)
+                    if two_pos[0] > two_pos[1]:
+                        mi, ma = two_pos[1], two_pos[0]
+                    else:
+                        mi, ma = two_pos[0], two_pos[1]
+                    new_g1, new_g2 = deepcopy(g1_tmp), deepcopy(g2_tmp)
+
+                    # --------core code--------
+                    for j in range(mi, ma + 1):
+                        m0, f0 = g1_tmp.get_pair(j)
+                        m1, f1 = g2_tmp.get_pair(j)
+                        new_g1.set_pair(j, m1, f1)
+                        new_g2.set_pair(j, m0, f0)
+                    # print(new_g1.vector_male)
+                    # print(new_g1.vector_female)
+                    # print(new_g2.vector_male)
+                    # print(new_g2.vector_female)
+                    # print("----------------------------")
+                    # print("============================")
+                    self.solutions.append(new_g1)
+                    self.solutions.append(new_g2)
+                    g1_idx, g2_idx = -1, -1
+            idx += 1
+
+    def mutation(self):
+        idx, L = 0, len(self.solutions)
+        while idx < L:
+            if random.random() < self.pm:
+                g = self.solutions[idx]
+                two_pos = random.choices(range(len(g)), k=2)
+                _, f0 = g.get_pair(two_pos[0])
+                _, f1 = g.get_pair(two_pos[1])
+
+                new_g = deepcopy(g)
+                new_g.set_female(two_pos[0], f1)
+                new_g.set_female(two_pos[1], f0)
+                self.solutions.append(new_g)
+            idx += 1
 
     def elite_reserve(self):
         """
@@ -117,29 +153,10 @@ class GASelector(object):
             self.select(fitness_probs)
             L = len(self.solutions)
 
-            g1_tmp, g2_tmp = -1, -1
-            idx = 0
-            while idx < L:
-                if random.random() < self.pc:
-                    if g1_tmp < 0:
-                        g1_tmp = idx
-                    elif g2_tmp < 0:
-                        g2_tmp = idx
-                    else:
-                        new_g1, new_g2 = self.crossover(self.solutions[g1_tmp], self.solutions[g2_tmp])
-                        self.solutions.append(new_g1)
-                        self.solutions.append(new_g2)
-                        g1_tmp, g2_tmp = -1, -1
-                idx += 1
-
+            self.crossover()
             # print("=============")
             # print(self.solutions)
-            idx = 0
-            while idx < L:
-                if random.random() < self.pm:
-                    new_individual = self.mutation(self.solutions[idx])
-                    self.solutions.append(new_individual)
-                idx += 1
+            self.mutation()
             # print(self.solutions)
             # print("==============")
 
@@ -152,6 +169,22 @@ class GASelector(object):
                 best_fitness = fvalue
                 best_solution = solution
         print("best fv:", best_fitness)
+        best_solution.sort_vector()
+        N = len(best_solution)
+        print(best_solution.vector_male)
+        print(best_solution.vector_female)
+        pre_pos = best_solution.vector_male[0]
+        print("========--------------------==========")
+        print(best_solution.vector_male[0], ": [", best_solution.vector_female[0], end=', ')
+        idx = 1
+        while idx < N:
+            if best_solution.vector_male[idx] != pre_pos:
+                print(']')
+                print(best_solution.vector_male[idx], ": [", end='')
+            print(best_solution.vector_female[idx], end=', ')
+            pre_pos = best_solution.vector_male[idx]
+            idx += 1
+        print("]")
 
 
 def run_main():

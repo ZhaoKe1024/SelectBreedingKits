@@ -6,6 +6,7 @@
 # @Software: PyCharm
 import random
 from typing import List
+import numpy as np
 from func import get_new_id, get_rand_gender
 
 
@@ -65,6 +66,14 @@ class MateSolution(object):
         # self.mate_dict = set()
         # self.kinship_matrix = None
 
+    def get_std(self) -> float:
+        male_dict = {}
+        for key in self.vector_male:
+            male_dict[key] = male_dict.get(key, 0) + 1
+        res_arr = list(male_dict.values())
+        # print("--->", res_arr)
+        return np.std(res_arr)
+
     def add_pair(self):
         pass
 
@@ -76,10 +85,26 @@ class MateSolution(object):
         self.vector_male[ind] = male_x
         self.vector_female[ind] = female_x
 
+    def set_female(self, ind: int, female_x) -> None:
+        self.vector_female[ind] = female_x
+
     def set_pair_slice(self, ind_s, ind_e, male_array, female_array):
         """use to crossover"""
         self.vector_male[ind_s:ind_e+1] = male_array
         self.vector_female[ind_s:ind_e + 1] = female_array
+
+    def sort_vector(self, by=1):
+        if by == 1:
+            sort_ed = sorted(range(len(self.vector_male)), key=lambda k: self.vector_male[k], reverse=False)
+        else:
+            sort_ed = sorted(range(len(self.vector_female)), key=lambda k: self.vector_female[k], reverse=False)
+        sorted_male = []
+        sorted_female = []
+        for ind in sort_ed:
+            sorted_male.append(self.vector_male[ind])
+            sorted_female.append(self.vector_female[ind])
+        self.vector_male = sorted_male
+        self.vector_female = sorted_female
 
     def __len__(self):
         return len(self.vector_male)
@@ -121,3 +146,32 @@ def calculate_inbreed_coef(fa, ma):
         return 0
     else:
         return -1
+
+
+if __name__ == '__main__':
+    so = MateSolution([], 0)
+    so.vector_male = [1,1,1,1,2,2,2,2,5,6,7,4,6,7,5,6]
+    so.vector_female = [6,4,7,6,4,3,6,8,7,9,0,7,5,6,7,8]
+    for i in range(len(so)):
+        print(so.vector_male[i], so.vector_female[i])
+    print("==============")
+    so.sort_vector()
+    for i in range(len(so)):
+        print(so.vector_male[i], so.vector_female[i])
+
+    best_solution = so
+    N = len(best_solution)
+    print()
+    pre_pos = best_solution.vector_male[0]
+    print(best_solution.vector_male[0], ": [", best_solution.vector_female[0], end=', ')
+    idx = 1
+    while idx < N:
+        if best_solution.vector_male[idx] != pre_pos:
+            print(']')
+            print(best_solution.vector_male[idx], ": [", end='')
+        print(best_solution.vector_female[idx], end=', ')
+        pre_pos = best_solution.vector_male[idx]
+        idx += 1
+    print("]")
+
+    print("std:", best_solution.get_std())
