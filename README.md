@@ -9,7 +9,7 @@ Because there is a one-to-many relationship between males and females, it is act
 ### File Structure
 ```text
 root(Sound-Representation-KZ)
-└─Breeding_Main.py  // Main Program
+└─Breeding_Main.py  // Main Program, Genetic Algorithm
 └─entities.py  // Poultry object and functions
 └─breedingkits.py  // functions for breeding
 └─xlsxreader.py  // used to read data from xlsx(Excel) files

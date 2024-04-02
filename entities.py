@@ -81,6 +81,9 @@ class MateSolution(object):
         self.vector_male[ind_s:ind_e+1] = male_array
         self.vector_female[ind_s:ind_e + 1] = female_array
 
+    def __len__(self):
+        return len(self.vector_male)
+
 
 class Stack(object):
     def __init__(self):
@@ -107,9 +110,9 @@ class Stack(object):
 
 def calculate_fitness(so: MateSolution, kinship: List[List]) -> float:
     res = 0.0
-    for male_item in so.vector_male:
-        for female_item in so.vector_female:
-            res += kinship[male_item][female_item]
+    L = len(so)
+    for i in range(L):
+        res += kinship[so.vector_male[i]][so.vector_female[i]]
     return res
 
 
