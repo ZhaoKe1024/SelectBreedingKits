@@ -29,6 +29,7 @@ class LayerNetworkGraph(object):
         self.vertex_list = vertex_list
         self.vertex_layer = vertex_layer
         for j, layer in enumerate(vertex_layer):
+            # print(j)
             for idx in layer:
                 self.vertex_list[idx].depth = j
         self.children = children
@@ -89,13 +90,17 @@ class LayerNetworkGraph(object):
 
     def print_children(self):
         print("====children====")
-        for ver_list in self.vertex_layer:
+        for ver_list in self.children:
             print([self.vertex_list[idx].name for idx in ver_list])
             # print("[", end='')
             # for ver in ver_list:
             #     print(ver.name, ":", self.children[ver.index])
             #     print(ver.name, ":", [self.vertex_list[idx].name for idx in self.children[ver.index]])  # , end=',')
             # print("]")
+
+    def print_layers(self):
+        for layer in self.vertex_layer:
+            print(layer)
 
     def __len__(self):
         return len(self.vertex_list)

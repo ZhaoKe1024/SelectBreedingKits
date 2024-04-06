@@ -7,9 +7,8 @@
 from typing import List
 import pandas as pd
 import random
-import numpy as np
 
-from entities import Poultry
+from selector.entities import Poultry
 
 
 def csv_read_test(filepath="./test_xlsx_data.csv"):
