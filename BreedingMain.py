@@ -7,7 +7,6 @@
 import numpy as np
 from xlsxreader import read_population_from_xlsx
 from selector.GASelector import GASelector
-from selector.GASelector import
 
 def run_main():
     popus, male_idxs, female_idxs = read_population_from_xlsx()

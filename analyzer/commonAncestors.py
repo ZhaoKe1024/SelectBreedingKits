@@ -137,7 +137,8 @@ class FamilyAnalyzer(object):
         self.Depth = len(familyGraph.vertex_layer)
         self.inv_vertex_layer = []
         for i in range(self.Depth):
-            self.inv_vertex_layer.append([self.num_ver - 1 - val for val in self.familyGraph.vertex_layer[self.Depth - 1 - i]])
+            self.inv_vertex_layer.append(
+                [self.num_ver - 1 - val for val in self.familyGraph.vertex_layer[self.Depth - 1 - i]])
         self.inv_vertex_list = familyGraph.vertex_list
         idx = 0
         for j, layer in enumerate(self.inv_vertex_layer):
@@ -152,15 +153,16 @@ class FamilyAnalyzer(object):
         self.parents = [[] for _ in range(self.num_ver)]  # inv_children
         for edge in familyGraph.edge_list:
             # inv graph need reverse the index of vertex
-            self.__add_edge(self.num_ver-1-edge[1], self.num_ver-1-edge[0])
+            self.__add_edge(self.num_ver - 1 - edge[1], self.num_ver - 1 - edge[0])
 
     def __initialize_inbreed_coef(self):
         pass
 
     def __invV(self, idx):
-        return self.inv_vertex_list[self.num_ver-1-idx]
+        return self.inv_vertex_list[self.num_ver - 1 - idx]
+
     def __invIdx(self, idx):
-        return self.num_ver-1-idx
+        return self.num_ver - 1 - idx
 
     def __add_edge(self, pre_idx, post_idx):
         self.parents[pre_idx].append(post_idx)
@@ -168,45 +170,72 @@ class FamilyAnalyzer(object):
         self.inv_outdegree[pre_idx] += 1
         self.inv_edge_list.append([pre_idx, post_idx])
 
-    def __find(self, inv_idx: int) -> List[int]:
+    def __find(self, inv_idx: int, rev=1) -> List[tuple]:
         marked = [False] * self.num_ver
         que = deque()
-        Li = [inv_idx]
+        Li = [(inv_idx, [inv_idx])]
         marked[inv_idx] = True
-        for p in self.parents[inv_idx]:
+        for p in self.parents[inv_idx][::rev]:
             marked[p] = True
-            que.append(p)
-            Li.append(p)
+            que.append((p, [inv_idx, p]))
+            Li.append((p, [inv_idx, p]))
         # print("first Li:", Li)
         # 判断必经点
         # 略，先放着pass
         while len(que) > 0:
-            t = que.popleft()
-            for p in self.parents[t]:
+            t, pre_path = que.popleft()
+            for p in self.parents[t][::rev]:
                 # print("p", p, marked[p])
                 if not marked[p]:
                     marked[p] = True
-                    que.append(p)
-                    Li.append(p)
+                    que.append((p, pre_path + [p]))
+                    Li.append((p, pre_path + [p]))
         return Li
+
+    def __intersection_path(self, ppath1, ppath2) -> List[tuple]:
+        ppath1.sort(key=lambda x: x[0], reverse=1)
+        ppath2.sort(key=lambda x: x[0], reverse=-1)
+        res = []
+        p1, M, p2, N = 0, len(ppath1), 0, len(ppath2)
+        while p1 < M and p2 < N:
+            while p1 < M and ppath1[p1][0] < ppath2[p2][0]:
+                p1 += 1
+            if p1 < M and ppath1[p1][0] == ppath2[p2][0]:
+                res.append((ppath1[p1][0], ppath1[p1][1], ppath2[p2][1]))
+            while p1 < M and ppath1[p1][0] == ppath2[p2][0]:
+                p1 += 1
+            p2 += 1
+        return res
 
     def find_all_common_ancestors(self, ind1: int, ind2: int) -> List[int]:
         """
         这里就不去做逆图了，直接在类里面设置反向边和反向children属性吧，方便检索
         :param ind1: reverse index of one vertex
         :param ind2:
-        :return:
+        :return: forward index of vertices
         """
-        L1 = self.__find(inv_idx=ind1)
-        L2 = self.__find(inv_idx=ind2)
-
-        # print("find parents of ind2")
-        # print([self.__invIdx(item) for item in L1])
-        # print("find parents of ind2")
-        # print([self.__invIdx(item) for item in L2])
-        common_L = sorted(list(set(L1)&set(L2)), reverse=True)
-        print([self.__invIdx(ind) for ind in common_L])
-        return []
+        if ind1 < ind2:
+            ind1, ind2 = ind2, ind1
+        L1 = self.__find(inv_idx=ind1, rev=1)
+        L2 = self.__find(inv_idx=ind2, rev=-1)
+        L_common = self.__intersection_path(L1, L2)
+        print("common ancestors and its path (before delete):")
+        for i, (idx, path1, path2) in enumerate(L_common):
+            print(self.__invIdx(idx), [self.__invIdx(item) for item in path1])
+            print(self.__invIdx(idx), [self.__invIdx(item) for item in path2])
+        del_list = []
+        for i, (idx, path1, path2) in enumerate(L_common):
+            if path1[-2] == path2[-2]:
+                del_list.append(i)
+        for i in del_list[::-1]:
+            del L_common[i]
+        res = []
+        print("common ancestors and its path:")
+        for i, (idx, path1, path2) in enumerate(L_common):
+            res.append(self.__invIdx(idx))
+            print(self.__invIdx(idx), [self.__invIdx(item) for item in path1])
+            print(self.__invIdx(idx), [self.__invIdx(item) for item in path2])
+        return res
 
     def calc_path_prob(self, ind1: int, ind2: int, ancestor: int) -> float:
         """
@@ -236,7 +265,15 @@ class FamilyAnalyzer(object):
             return coef_base * (1 + self.calc_inbreed_coef(ancestor))
 
     def calc_kinship_corr(self, ind1: int, ind2: int) -> float:
+        """
+
+        :param ind1: forward index of vertex 1
+        :param ind2: forward index of vertex 2
+        :return:
+        """
         common_ancestors = self.find_all_common_ancestors(self.__invIdx(ind1), self.__invIdx(ind2))
+        print(f"common ancestors of {ind1} and {ind2}:")
+        print('\t', common_ancestors)
         corr = 0.
         for anc in common_ancestors:
             corr += self.calc_path_prob(ind1, ind2, anc)
@@ -259,7 +296,9 @@ if __name__ == "__main__":
 
     # print(analyzer.calc_inbreed_coef(26))
     # print(analyzer.calc_path_prob(24, 25, ancestor=10))
-    analyzer.find_all_common_ancestors(analyzer.num_ver-1-24, analyzer.num_ver-1-25)
+    # analyzer.find_all_common_ancestors(analyzer.num_ver - 1 - 24, analyzer.num_ver - 1 - 25)
+    # print(analyzer.calc_kinship_corr(21, 22))  # fail
+    print(analyzer.calc_kinship_corr(24, 25))
     # print(analyzer.inv_indegree)
     # print(analyzer.inv_outdegree)
     # print(analyzer.inv_edge_list)
