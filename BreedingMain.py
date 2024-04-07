@@ -5,7 +5,7 @@
 # @File : BreedingMain.py
 # @Software: PyCharm
 import numpy as np
-from xlsxreader import read_population_from_xlsx
+from procedure.xlsxreader import read_population_from_xlsx
 from selector.GASelector import GASelector
 
 

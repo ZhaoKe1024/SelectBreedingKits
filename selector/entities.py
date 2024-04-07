@@ -17,10 +17,10 @@ class Vertex(object):
         self.depth = depth
         self.inbreed_coef = -1.0
         self.gender = gender
-        self.family_id: family_id
+        self.family_id = family_id
 
     def __str__(self):
-        return f"Vertex:({self.index}, {self.name})"
+        return f"Vertex:({self.index}, {self.name}, depth:{self.depth}, gender:{self.gender}, family_id:{self.family_id})"
 
 
 class Poultry(object):
