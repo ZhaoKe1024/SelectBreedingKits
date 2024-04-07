@@ -164,6 +164,9 @@ class FamilyAnalyzer(object):
     def __invIdx(self, idx):
         return self.num_ver - 1 - idx
 
+    def printarray(self, array):
+        print([self.__invIdx(val) for val in array])
+
     def __add_edge(self, pre_idx, post_idx):
         self.parents[pre_idx].append(post_idx)
         self.inv_indegree[post_idx] += 1
@@ -207,6 +210,62 @@ class FamilyAnalyzer(object):
             p2 += 1
         return res
 
+    def __dfs(self, start: int, end: int, path: List[int], allpath: List[List]) -> None:
+        # print(f"start:{self.__invIdx(start)}, end:{self.__invIdx(end)}")
+        if start == end:
+            # print("res: ", [self.__invIdx(val) for val in path+[start]])
+            allpath.append(path + [start])
+
+        path.append(start)
+        for p in self.parents[start]:
+            self.__dfs(p, end, path, allpath)
+            path.pop(-1)
+
+    def find_all_path(self, start, end) -> List[List]:
+        """
+
+        :param start: forward index of start point
+        :param end: forward index of end point
+        :return:
+        """
+        # print(f"find all path from {start} to {end}")
+        tmp_path = []
+        paths1 = []
+        self.__dfs(self.__invIdx(start), self.__invIdx(end), tmp_path, paths1)
+        return paths1
+
+    def __iloc_set(self, array2d: List[List], ind: int) -> set:
+        res = set()
+        for arr in array2d:
+            # print("add:", arr[ind])
+            res.add(arr[ind])
+        return res
+
+    def __remove_redundancy(self, ind1: int, ind2: int, parent: int) -> bool:
+        """
+
+        :param ind1: forward index
+        :param ind2: forward index
+        :param parent: forward index
+        :return:
+        """
+        # print(f"remove redundancy for {ind1} and {ind2} to {parent}")
+        paths1 = self.find_all_path(start=ind1, end=parent)
+        paths2 = self.find_all_path(start=ind2, end=parent)
+        # for path in paths1:
+        #     self.printarray(path)
+        # print("---")
+        # for path in paths2:
+        #     self.printarray(path)
+        # print("set1 and set 2 and con")
+        # print(self.__iloc_set(paths1, -2), self.__iloc_set(paths2, -2))
+        # print(self.__iloc_set(paths1, -2) | self.__iloc_set(paths2, -2))
+        # print("length:", len(self.__iloc_set(paths1, -2) | self.__iloc_set(paths2, -2)))
+        if len(self.__iloc_set(paths1, -2) | self.__iloc_set(paths2, -2)) < 2:
+            return False
+        else:
+            return True
+
     def find_all_common_ancestors(self, ind1: int, ind2: int) -> List[int]:
         """
         这里就不去做逆图了，直接在类里面设置反向边和反向children属性吧，方便检索
@@ -214,27 +273,52 @@ class FamilyAnalyzer(object):
         :param ind2:
         :return: forward index of vertices
         """
-        if ind1 < ind2:
+        if ind1 > ind2:
             ind1, ind2 = ind2, ind1
-        L1 = self.__find(inv_idx=ind1, rev=1)
-        L2 = self.__find(inv_idx=ind2, rev=-1)
+        L1 = self.__find(inv_idx=self.__invIdx(ind1), rev=1)
+        L2 = self.__find(inv_idx=self.__invIdx(ind2), rev=-1)
+        # for i in range(len(L1)):
+        #     tmp_tuple = (self.__invIdx(L1[i][0]), [self.__invIdx(val) for val in L1[i][1]])
+        #     L1[i] = tmp_tuple
+        # for i in range(len(L2)):
+        #     tmp_tuple = (self.__invIdx(L2[i][0]), [self.__invIdx(val) for val in L2[i][1]])
+        #     L2[i] = tmp_tuple
+
+        # for i in range(len(L1)):
+        #     print(self.__invIdx(L1[i][0]), [self.__invIdx(val) for val in L1[i][1]])
+        #     # L1[i] = tmp_tuple
+        # for i in range(len(L2)):
+        #     print(self.__invIdx(L2[i][0]), [self.__invIdx(val) for val in L2[i][1]])
+        #     # L2[i] = tmp_tuple
+
         L_common = self.__intersection_path(L1, L2)
-        print("common ancestors and its path (before delete):")
-        for i, (idx, path1, path2) in enumerate(L_common):
-            print(self.__invIdx(idx), [self.__invIdx(item) for item in path1])
-            print(self.__invIdx(idx), [self.__invIdx(item) for item in path2])
-        del_list = []
-        for i, (idx, path1, path2) in enumerate(L_common):
-            if path1[-2] == path2[-2]:
-                del_list.append(i)
-        for i in del_list[::-1]:
-            del L_common[i]
+        # print("common ancestors and its path (before delete):")
+        # print("[", end='')
+        # for i, (idx, path1, path2) in enumerate(L_common):
+        #     print(self.__invIdx(idx), end=', ')
+        # #     # print(self.__invIdx(idx), [self.__invIdx(item) for item in path1])
+        # #     # print(self.__invIdx(idx), [self.__invIdx(item) for item in path2])
+        # print("]")
+        # 下面需要修改
+        # del_list = []
+        marked = [False] * len(L_common)
+        for i, (idx, _, _) in enumerate(L_common):
+            # if self.__remove_redundancy(ind1=self.__invIdx(ind1), ind2=self.__invIdx(ind2), parent=self.__invIdx(idx)):
+            # if self.__remove_redundancy(ind1=self.__invIdx(ind1), ind2=self.__invIdx(ind2), parent=idx):
+            if self.__remove_redundancy(ind1=ind1, ind2=ind2, parent=self.__invIdx(idx)):
+                marked[i] = True
+        # print("del list:", del_list)
+        # for i in del_list[::-1]:
+        #     del L_common[i]
         res = []
-        print("common ancestors and its path:")
-        for i, (idx, path1, path2) in enumerate(L_common):
-            res.append(self.__invIdx(idx))
-            print(self.__invIdx(idx), [self.__invIdx(item) for item in path1])
-            print(self.__invIdx(idx), [self.__invIdx(item) for item in path2])
+        # print("[", end='')
+        for i in range(len(marked)):
+            if marked[i]:
+                res.append(self.__invIdx(L_common[i][0]))
+                # print(self.__invIdx(L_common[i][0]), end=', ')
+            # print(self.__invIdx(idx), [self.__invIdx(item) for item in path1])
+            # print(self.__invIdx(idx), [self.__invIdx(item) for item in path2])
+        # print("]")
         return res
 
     def calc_path_prob(self, ind1: int, ind2: int, ancestor: int) -> float:
@@ -271,34 +355,74 @@ class FamilyAnalyzer(object):
         :param ind2: forward index of vertex 2
         :return:
         """
-        common_ancestors = self.find_all_common_ancestors(self.__invIdx(ind1), self.__invIdx(ind2))
-        print(f"common ancestors of {ind1} and {ind2}:")
-        print('\t', common_ancestors)
+        common_ancestors = self.find_all_common_ancestors(ind1, ind2)
+        # print(f"common ancestors of {ind1} and {ind2}:")
+        # print('\t', common_ancestors)
         corr = 0.
         for anc in common_ancestors:
             corr += self.calc_path_prob(ind1, ind2, anc)
         return corr
 
-    def calc_inbreed_coef(self, ind: int) -> float:
+    def calc_inbreed_coef(self, indi: int) -> float:
+        print("input:", indi)
+        parent = self.get_parents(indi)
+        print(f"{indi}的双亲:", parent)
+        return 0.5 * self.calc_kinship_corr(parent[0], parent[1])
 
-        parent = self.parents[ind]
-        print(parent)
-
-        return 0.5  # * self.calc_kinship_corr(parent[0], parent[1])
+    def get_parents(self, idx: int) -> List[int]:
+        return [self.__invIdx(val) for val in self.parents[self.__invIdx(idx)]]
 
 
-if __name__ == "__main__":
+def example_all():
+    p = 26
     lg = get_instant_1()
+    analyzer = FamilyAnalyzer(familyGraph=lg)
     # lg.print_layers()
     # lg.print_children()
     # print("=============================")
-    analyzer = FamilyAnalyzer(familyGraph=lg)
+    print("个体 index:", p)
+    parent = analyzer.get_parents(p)
+    print("双亲:", parent)
+    common_ancs = analyzer.find_all_common_ancestors(parent[0], parent[1])
+    print("共同祖先：", common_ancs)
+    print("个体 index:", p)
+    print("亲缘相关系数：", analyzer.calc_kinship_corr(24, 25))
+    print("个体 index:", p)
+    print("个体近交系数：", 0.5*analyzer.calc_inbreed_coef(p))
+    print("====================")
+    p = 24
+    print("个体 index:", p)
+    parent = analyzer.get_parents(p)
+    print("双亲:", parent)
+    common_ancs = analyzer.find_all_common_ancestors(parent[0], parent[1])
+    print(common_ancs)
+    p1, p2 = 21, 22
+    print("给定个体:", p1, p2)
+    print("共同祖先：")
+    common_ancs = analyzer.find_all_common_ancestors(p1, p2)
+    print(common_ancs)
+    print("亲缘相关系数：", analyzer.calc_kinship_corr(p1, p2))  #
+    print("个体近交系数：", analyzer.calc_inbreed_coef(24), "eq?", 0.5*analyzer.calc_kinship_corr(p1, p2))
+
+
+if __name__ == "__main__":
+    example_all()
+
+    # p1, p2 = 21, 22
+    # lg = get_instant_1()
+    # analyzer = FamilyAnalyzer(familyGraph=lg)
+    # paths = analyzer.find_all_path(21, 3)
+    # for path in paths:
+    #     analyzer.printarray(path)
+    #
+    # paths = analyzer.find_all_path(22, 3)
+    # for path in paths:
+    #     analyzer.printarray(path)
+    # common_ancs = analyzer.find_all_common_ancestors(p1, p2)
 
     # print(analyzer.calc_inbreed_coef(26))
     # print(analyzer.calc_path_prob(24, 25, ancestor=10))
-    # analyzer.find_all_common_ancestors(analyzer.num_ver - 1 - 24, analyzer.num_ver - 1 - 25)
-    # print(analyzer.calc_kinship_corr(21, 22))  # fail
-    print(analyzer.calc_kinship_corr(24, 25))
+    # print(analyzer.calc_kinship_corr(24, 25))
     # print(analyzer.inv_indegree)
     # print(analyzer.inv_outdegree)
     # print(analyzer.inv_edge_list)
