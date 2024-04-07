@@ -21,8 +21,8 @@ def read_vertices_from_xlsx(file_path="./历代配种方案及出雏对照2021.x
     # print(sex_table.iloc[:, 1])
     male_id_len = len(set(sex_table.iloc[:, 1]))
     female_id_len = len(set(sex_table.iloc[:, 2]))
-    print("number of male poultry in " + sheet_name + ":" + str(male_id_len))
-    print("number of female poultry in " + sheet_name + ":" + str(female_id_len))
+    # print("number of male poultry in " + sheet_name + ":" + str(male_id_len))
+    # print("number of female poultry in " + sheet_name + ":" + str(female_id_len))
     male_name_set = set()
     name2id = dict()
     male_vertex_list = []
@@ -49,7 +49,7 @@ def read_vertices_from_xlsx(file_path="./历代配种方案及出雏对照2021.x
         name2id[getattr(row, "母鸡号")] = male_id_len + id_start
         female_id += 1
 
-    print("number of female poultry in " + sheet_name + ":" + str(len(female_veretx_list)))
+    # print("number of female poultry in " + sheet_name + ":" + str(len(female_veretx_list)))
     cur_vertex_list = male_vertex_list + female_veretx_list
     return cur_vertex_list
 
@@ -113,11 +113,11 @@ def read_vertices_edges_from_xlsx(file_path, sheet_name, pre_sheet_name,
             ma_i = getattr(row, "_3")
             pre_children[pre_name2ind[fa_i]].append(cur_name2idx[wi])
             pre_children[pre_name2ind[ma_i]].append(cur_name2idx[wi])
-        # print(f"({wi}<--{fa_i},{ma_i})")
+    print(pre_children)
     return cur_vertex_list, pre_children
 
 
-def build_family_graph():
+def build_family_graph()-> LayerNetworkGraph:
     sheet_list = ["16", "17", "18", "19", "20"]
     depth = len(sheet_list)
     vertex_list = []
@@ -160,8 +160,8 @@ def build_family_graph():
     # print(sum([len(item) for item in vertex_layer]))
     # print(len(children_list))
 
-    # for i, child_list in enumerate(children_list):
-    #     print(vertex_list[i].name, ":", [vertex_list[val].name for val in child_list])
+    for i, child_list in enumerate(children_list):
+        print(vertex_list[i].name, ":", [vertex_list[val].name for val in child_list])
 
     layergraph = LayerNetworkGraph(vertex_list=vertex_list, vertex_layer=vertex_layer, children=children_list)
     return layergraph

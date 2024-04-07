@@ -11,9 +11,9 @@ from func import get_new_id, get_rand_gender
 
 
 class Vertex(object):
-    def __init__(self, index, name=None, depth=0, gender=0, family_id: str = ""):
+    def __init__(self, index, name:str=None, depth=0, gender=0, family_id: str = ""):
         self.index = index
-        self.name = name if name else str(index)
+        self.name = str(name) if name else str(index)
         self.depth = depth
         self.inbreed_coef = -1.0
         self.gender = gender
