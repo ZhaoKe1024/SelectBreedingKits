@@ -198,16 +198,19 @@ class FamilyAnalyzer(object):
     def __intersection_path(self, ppath1, ppath2) -> List[tuple]:
         ppath1.sort(key=lambda x: x[0], reverse=1)
         ppath2.sort(key=lambda x: x[0], reverse=-1)
+        # print([item[0] for item in ppath1])
+        # print([item[0] for item in ppath2])
         res = []
         p1, M, p2, N = 0, len(ppath1), 0, len(ppath2)
         while p1 < M and p2 < N:
-            while p1 < M and ppath1[p1][0] < ppath2[p2][0]:
+            while p1 < M and ppath1[p1][0] > ppath2[p2][0]:
                 p1 += 1
             if p1 < M and ppath1[p1][0] == ppath2[p2][0]:
                 res.append((ppath1[p1][0], ppath1[p1][1], ppath2[p2][1]))
             while p1 < M and ppath1[p1][0] == ppath2[p2][0]:
                 p1 += 1
             p2 += 1
+        # print([item[0] for item in res])
         return res
 
     def __dfs(self, start: int, end: int, path: List[int], allpath: List[List]) -> None:
@@ -296,8 +299,8 @@ class FamilyAnalyzer(object):
         # print("[", end='')
         # for i, (idx, path1, path2) in enumerate(L_common):
         #     print(self.__invIdx(idx), end=', ')
-        # #     # print(self.__invIdx(idx), [self.__invIdx(item) for item in path1])
-        # #     # print(self.__invIdx(idx), [self.__invIdx(item) for item in path2])
+        #     # print(self.__invIdx(idx), [self.__invIdx(item) for item in path1])
+        #     # print(self.__invIdx(idx), [self.__invIdx(item) for item in path2])
         # print("]")
         # 下面需要修改
         # del_list = []
@@ -334,19 +337,22 @@ class FamilyAnalyzer(object):
         ind2_gene = self.inv_vertex_list[self.__invIdx(ind2)].depth
         # print(gene_origin, ind1_gene, ind2_gene)
         coef_base = 1. / (1 << (abs(gene_origin - ind1_gene) + abs(gene_origin - ind2_gene)))
-        FA = self.inv_vertex_list[ancestor].inbreed_coef
-        # print(coef_base, FA)
-        # return coef_base
-        if FA > -0.9:
-            # 如果FA非负
-            return coef_base * (1 + FA)
+        if self.inv_vertex_list[ancestor].depth == self.num_ver-1:
+            return coef_base
         else:
-            # if self.familyGraph.vertex_list[ancestor].depth == 0:
-            #     # 初代的近交系数就是0
-            #     return coef_base
-            # if FA is negative, w.r.t. it has not been calculated
+            FA = self.inv_vertex_list[ancestor].inbreed_coef
+            # print(coef_base, FA)
+            # return coef_base
+            if FA > -0.9:
+                # 如果FA非负
+                return coef_base * (1 + FA)
+            else:
+                # if self.familyGraph.vertex_list[ancestor].depth == 0:
+                #     # 初代的近交系数就是0
+                #     return coef_base
+                # if FA is negative, w.r.t. it has not been calculated
 
-            return coef_base * (1 + self.calc_inbreed_coef(ancestor))
+                return coef_base * (1 + self.calc_inbreed_coef(ancestor))
 
     def calc_kinship_corr(self, ind1: int, ind2: int) -> float:
         """
@@ -356,15 +362,20 @@ class FamilyAnalyzer(object):
         :return:
         """
         common_ancestors = self.find_all_common_ancestors(ind1, ind2)
-        # print(f"common ancestors of {ind1} and {ind2}:")
-        # print('\t', common_ancestors)
+        print(f"common ancestors of {ind1} and {ind2}:")
+        print('\t', common_ancestors)
         corr = 0.
+        # return corr
         for anc in common_ancestors:
-            corr += self.calc_path_prob(ind1, ind2, anc)
+            item = self.calc_path_prob(ind1, ind2, anc)
+            print(f"ind {ind1} and {ind2} to {anc}: item: {item}")
+            corr += item
         return corr
 
     def calc_inbreed_coef(self, indi: int) -> float:
-        print("input:", indi)
+        # print(self.inv_vertex_list[self.__invIdx(indi)].depth)
+        if self.inv_vertex_list[self.__invIdx(indi)].depth == len(self.inv_vertex_layer)-1:
+            return 0.
         parent = self.get_parents(indi)
         print(f"{indi}的双亲:", parent)
         return 0.5 * self.calc_kinship_corr(parent[0], parent[1])
@@ -384,7 +395,7 @@ def example_all():
     parent = analyzer.get_parents(p)
     print("双亲:", parent)
     common_ancs = analyzer.find_all_common_ancestors(parent[0], parent[1])
-    print("共同祖先：", common_ancs)
+    # print("共同祖先：", common_ancs)
     print("个体 index:", p)
     print("亲缘相关系数：", analyzer.calc_kinship_corr(24, 25))
     print("个体 index:", p)
@@ -406,7 +417,17 @@ def example_all():
 
 
 if __name__ == "__main__":
-    example_all()
+    # example_all()
+
+    lg = get_instant_1()
+    analyzer = FamilyAnalyzer(familyGraph=lg)
+    # analyzer.calc_path_prob(16, 17, 0)
+    # print(analyzer.calc_inbreed_coef(2))
+    # print(analyzer.calc_inbreed_coef(9))
+    print(analyzer.calc_inbreed_coef(26))
+    print(analyzer.calc_inbreed_coef(24))
+    # print(analyzer.find_all_common_ancestors(21, 22))
+    # print(analyzer.find_all_common_ancestors(24, 25))
 
     # p1, p2 = 21, 22
     # lg = get_instant_1()
@@ -418,8 +439,10 @@ if __name__ == "__main__":
     # paths = analyzer.find_all_path(22, 3)
     # for path in paths:
     #     analyzer.printarray(path)
-    # common_ancs = analyzer.find_all_common_ancestors(p1, p2)
-
+    # common_ancs = analyzer.find_all_common_ancestors(24, 25)
+    # print(common_ancs)
+    # common_ancs = analyzer.find_all_common_ancestors(16, 17)
+    # print(common_ancs)
     # print(analyzer.calc_inbreed_coef(26))
     # print(analyzer.calc_path_prob(24, 25, ancestor=10))
     # print(analyzer.calc_kinship_corr(24, 25))
