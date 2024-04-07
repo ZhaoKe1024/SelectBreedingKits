@@ -8,11 +8,12 @@ import numpy as np
 from xlsxreader import read_population_from_xlsx
 from selector.GASelector import GASelector
 
+
 def run_main():
     popus, male_idxs, female_idxs = read_population_from_xlsx()
     # print()
     np.random.seed(42)  # 2024-04-02
-    kinship_matrix = 1/16 + 1/16 * np.random.randn(len(male_idxs), len(female_idxs))
+    kinship_matrix = 1 / 16 + 1 / 16 * np.random.randn(len(male_idxs), len(female_idxs))
     GAS = GASelector(popus=popus, male_idxs=male_idxs, female_idxs=female_idxs, kinship_matrix=kinship_matrix)
     GAS.scheduler()
 

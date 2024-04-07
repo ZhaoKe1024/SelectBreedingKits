@@ -8,7 +8,10 @@ from typing import List
 import pandas as pd
 import random
 
+from pandas import DataFrame
+
 from selector.entities import Poultry
+from analyzer.LayerGraph import LayerNetworkGraph
 
 
 def csv_read_test(filepath="./test_xlsx_data.csv"):
@@ -26,7 +29,7 @@ def read_xlsx(filepath="./历代配种方案及出雏对照2021.xlsx"):
             print(parent_df.shape, parent_df.dropna(axis=0).shape)  # drop rows contain NaN value
 
 
-def get_df_from_xlsx(filepath="./历代配种方案及出雏对照2021.xlsx", sheet_name=None, cols: List = None):
+def get_df_from_xlsx(filepath="./历代配种方案及出雏对照2021.xlsx", sheet_name=None, cols: List = None)->DataFrame:
     df_table = pd.read_excel(filepath, sheet_name=sheet_name, header=0, index_col=None,
                              usecols=cols)  # about reading xlsx file
     parent_df = df_table.dropna(axis=0).astype(int)
