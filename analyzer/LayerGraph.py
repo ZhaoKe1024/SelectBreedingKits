@@ -12,7 +12,7 @@ class Vertex(object):
         self.index = index
         self.name = name if name else str(index)
         self.depth = depth
-        self.inbreed_coef = -1.0
+        self.inbreed_coef = 0.0
 
     def __str__(self):
         return f"Vertex:({self.index}, {self.name})"

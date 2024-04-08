@@ -11,5 +11,5 @@ if __name__ == '__main__':
     # kinship.print_all_poultry()
     # print(kinship.calc_kinship_corr(p1="3916", p2="3712"))
     # print(kinship.calc_kinship_corr(p1="462", p2="461"))
-    # print(kinship.calc_kinship_corr(p1="7197", p2="7194"))
+    print(kinship.calc_kinship_corr(p1="7197", p2="7194"))
     # print(kinship.calc_kinship_corr(p1="462", p2="461"))

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Author : ZhaoKe
 # @Time : 2024-04-06 23:51
+import math
 from typing import List
 from collections import deque
 from analyzer.LayerGraph import Vertex, LayerNetworkGraph
@@ -341,18 +342,28 @@ class FamilyAnalyzer(object):
             return coef_base
         else:
             FA = self.inv_vertex_list[ancestor].inbreed_coef
-            # print(coef_base, FA)
-            # return coef_base
-            if FA > -0.9:
-                # 如果FA非负
+            if FA > 0.0001:
                 return coef_base * (1 + FA)
             else:
-                # if self.familyGraph.vertex_list[ancestor].depth == 0:
-                #     # 初代的近交系数就是0
-                #     return coef_base
-                # if FA is negative, w.r.t. it has not been calculated
-
+                self.inv_vertex_list[ancestor].inbreed_coef = self.calc_inbreed_coef(ancestor)
                 return coef_base * (1 + self.calc_inbreed_coef(ancestor))
+            # print(coef_base, FA)
+            # return coef_base
+            # if FA > -0.9:
+            #     # 如果FA非负
+            #     print("======>:FA", FA)
+            #     return coef_base * (1 + FA)
+            # else:
+            #     print("======>:FA", FA)
+            #     # if self.familyGraph.vertex_list[ancestor].depth == 0:
+            #     #     # 初代的近交系数就是0
+            #     #     return coef_base
+            #     # if FA is negative, w.r.t. it has not been calculated
+            #
+            #     return coef_base * (1 + self.calc_inbreed_coef(ancestor))
+
+    def __name(self, ind: int):
+        return self.inv_vertex_list[ind].name
 
     def calc_kinship_corr(self, ind1: int, ind2: int) -> float:
         """
@@ -362,22 +373,23 @@ class FamilyAnalyzer(object):
         :return:
         """
         common_ancestors = self.find_all_common_ancestors(ind1, ind2)
-        print(f"common ancestors of {ind1} and {ind2}:")
-        print('\t', common_ancestors)
+        print(f"common ancestors of {self.__name(ind1)} and {self.__name(ind2)}:")
+        print('\t', [self.__name(val) for val in common_ancestors])
         corr = 0.
         # return corr
         for anc in common_ancestors:
             item = self.calc_path_prob(ind1, ind2, anc)
-            print(f"ind {ind1} and {ind2} to {anc}: item: {item}")
+            print(f"ind {self.__name(ind1)} and {self.__name(ind2)} to {self.__name(anc)}: item: {item}")
             corr += item
-        return corr
+        return corr / math.sqrt((1+self.calc_inbreed_coef(ind1))*(1+self.calc_inbreed_coef(ind2)))
 
     def calc_inbreed_coef(self, indi: int) -> float:
+        print("--------------inbreed coefficient----------------")
         # print(self.inv_vertex_list[self.__invIdx(indi)].depth)
         if self.inv_vertex_list[self.__invIdx(indi)].depth == len(self.inv_vertex_layer)-1:
             return 0.
         parent = self.get_parents(indi)
-        print(f"{indi}的双亲:", parent)
+        print(f"{self.__name(indi)}的双亲:", [self.__name(val) for val in parent])
         return 0.5 * self.calc_kinship_corr(parent[0], parent[1])
 
     def get_parents(self, idx: int) -> List[int]:
