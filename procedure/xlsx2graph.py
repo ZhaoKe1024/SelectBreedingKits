@@ -101,7 +101,7 @@ def read_vertices_edges_from_xlsx(file_path, sheet_name, pre_sheet_name,
     cur_name2idx = dict()
     for ver in cur_vertex_list:
         cur_name2idx[ver.name] = ver.index
-        # if sheet_name == "19":
+        # if sheet_name in ["17", "18"]:
         #     print(f"name:{ver.name}_index:{ver.index}")
     # print(cur_name2idx)
     pre_children = [[] for _ in range(len(pre_name2ind))]
@@ -111,7 +111,7 @@ def read_vertices_edges_from_xlsx(file_path, sheet_name, pre_sheet_name,
         # if sheet_name == "19":
         # print("row:", row)
         wi = str(getattr(row, "翅号")) if "翅号" in edges_df.columns else str(getattr(row, "_1"))
-        # if sheet_name == "19":
+        # if sheet_name in ["17", "18"]:
         #     print("row:", row)
         #     print("wi:", wi)
         if wi in cur_name2idx:
@@ -121,13 +121,13 @@ def read_vertices_edges_from_xlsx(file_path, sheet_name, pre_sheet_name,
             pre_children[pre_name2ind[ma_i]].append(cur_name2idx[wi])
     # for i, child_list in enumerate(pre_children):
     #     print(pre[i].name, ":", child_list)
-    # if sheet_name == "19":
+    # if sheet_name in ["17", "18"]:
     #     for i, key in enumerate(pre_name2ind):
     #         print(key, ":", pre_children[i])
     return cur_vertex_list, pre_children
 
 
-def build_family_graph()-> LayerNetworkGraph:
+def build_family_graph_base():
     sheet_list = ["16", "17", "18", "19", "20"]
     depth = len(sheet_list)
     vertex_list = []
@@ -148,7 +148,7 @@ def build_family_graph()-> LayerNetworkGraph:
     for depth, sheet_name in enumerate(sheet_list):
         if depth == 0:
             continue
-        print("start point and edge:", sheet_name)
+        print("build start point and edge for sheet:", sheet_name)
         each_vertex_list, pre_children = read_vertices_edges_from_xlsx(file_path="./历代配种方案及出雏对照2021.xlsx",
                                                                        sheet_name=sheet_list[depth],
                                                                        pre_sheet_name=sheet_list[depth - 1],
@@ -174,7 +174,11 @@ def build_family_graph()-> LayerNetworkGraph:
     #     print(vertex_list[i].name, ":", [vertex_list[val].name for val in child_list])
     #     if i > 100:
     #         break
+    return vertex_list, vertex_layer, children_list, pre_name2idx
 
+
+def build_family_graph() -> LayerNetworkGraph:
+    vertex_list, vertex_layer, children_list, _ = build_family_graph_base()
     layergraph = LayerNetworkGraph(vertex_list=vertex_list, vertex_layer=vertex_layer, children=children_list)
     return layergraph
 

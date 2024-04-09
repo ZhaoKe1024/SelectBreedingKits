@@ -156,8 +156,26 @@ class FamilyAnalyzer(object):
             # inv graph need reverse the index of vertex
             self.__add_edge(self.num_ver - 1 - edge[1], self.num_ver - 1 - edge[0])
 
-    def __initialize_inbreed_coef(self):
-        pass
+    def add_generation(self, new_vertices, new_parents):
+        # 计数新的个体
+        N = len(new_vertices)
+        self.Depth += 1
+        self.num_ver += len(new_vertices)
+        self.inv_indegree = [0] * len(new_vertices) + self.inv_indegree
+        self.inv_outdegree = [2] * len(new_vertices) + self.inv_outdegree
+        # 1 层数增加
+        for i, layer in enumerate(self.inv_vertex_layer):
+            for ver in layer:
+                self.inv_vertex_list[ver].index += N
+                self.inv_vertex_list[ver].depth += 1
+        # 2 索引增加
+        # ---- 已经是有的了，不用了
+        # 合并
+        self.inv_vertex_list = new_vertices + self.inv_vertex_list
+        self.inv_vertex_layer.insert(0, list(range(N)))
+        # self.inv_edge_list
+        self.parents = new_parents + self.parents
+
 
     def __invV(self, idx):
         return self.inv_vertex_list[self.num_ver - 1 - idx]
@@ -254,11 +272,13 @@ class FamilyAnalyzer(object):
         :return:
         """
         # print(f"remove redundancy for {ind1} and {ind2} to {parent}")
+        # if ind1 == parent or ind2 == parent:
+        #     return False
         paths1 = self.find_all_path(start=ind1, end=parent)
         paths2 = self.find_all_path(start=ind2, end=parent)
         # for path in paths1:
         #     self.printarray(path)
-        # print("---")
+        # # print("---")
         # for path in paths2:
         #     self.printarray(path)
         # print("set1 and set 2 and con")
@@ -287,16 +307,16 @@ class FamilyAnalyzer(object):
         # for i in range(len(L2)):
         #     tmp_tuple = (self.__invIdx(L2[i][0]), [self.__invIdx(val) for val in L2[i][1]])
         #     L2[i] = tmp_tuple
-
+        # print("============================================")
         # for i in range(len(L1)):
         #     print(self.__invIdx(L1[i][0]), [self.__invIdx(val) for val in L1[i][1]])
         #     # L1[i] = tmp_tuple
         # for i in range(len(L2)):
         #     print(self.__invIdx(L2[i][0]), [self.__invIdx(val) for val in L2[i][1]])
-        #     # L2[i] = tmp_tuple
+        #     L2[i] = tmp_tuple
 
         L_common = self.__intersection_path(L1, L2)
-        # print("common ancestors and its path (before delete):")
+        # print(f"common ancestors and its path (before delete) for {ind1} and {ind2}:")
         # print("[", end='')
         # for i, (idx, path1, path2) in enumerate(L_common):
         #     print(self.__invIdx(idx), end=', ')
@@ -373,23 +393,27 @@ class FamilyAnalyzer(object):
         :return:
         """
         common_ancestors = self.find_all_common_ancestors(ind1, ind2)
-        print(f"common ancestors of {self.__name(ind1)} and {self.__name(ind2)}:")
-        print('\t', [self.__name(val) for val in common_ancestors])
+        # print(f"common ancestors of {self.__name(ind1)} and {self.__name(ind2)}:")
+        # print('\t', [self.__name(val) for val in common_ancestors])
         corr = 0.
         # return corr
         for anc in common_ancestors:
             item = self.calc_path_prob(ind1, ind2, anc)
-            print(f"ind {self.__name(ind1)} and {self.__name(ind2)} to {self.__name(anc)}: item: {item}")
+            # print(f"ind {self.__name(ind1)} and {self.__name(ind2)} to {self.__name(anc)}: item: {item}")
             corr += item
         return corr / math.sqrt((1+self.calc_inbreed_coef(ind1))*(1+self.calc_inbreed_coef(ind2)))
 
     def calc_inbreed_coef(self, indi: int) -> float:
-        print("--------------inbreed coefficient----------------")
+        # print("--------------inbreed coefficient----------------")
         # print(self.inv_vertex_list[self.__invIdx(indi)].depth)
-        if self.inv_vertex_list[self.__invIdx(indi)].depth == len(self.inv_vertex_layer)-1:
-            return 0.
+        # if self.inv_vertex_list[self.__invIdx(indi)].depth == len(self.inv_vertex_layer)-1:
+        #     self.inv_vertex_list[self.__invIdx(indi)].inbreed_coef = 0.
+        #     return 0.
         parent = self.get_parents(indi)
-        print(f"{self.__name(indi)}的双亲:", [self.__name(val) for val in parent])
+        if len(parent) == 0:
+            self.inv_vertex_list[self.__invIdx(indi)].inbreed_coef = 0.
+            return 0.
+        # print(f"{self.__name(indi)}的双亲:", [self.__name(val) for val in parent])
         return 0.5 * self.calc_kinship_corr(parent[0], parent[1])
 
     def get_parents(self, idx: int) -> List[int]:
