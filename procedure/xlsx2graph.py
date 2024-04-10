@@ -127,14 +127,14 @@ def read_vertices_edges_from_xlsx(file_path, sheet_name, pre_sheet_name,
     return cur_vertex_list, pre_children
 
 
-def build_family_graph_base():
+def build_family_graph_base(file_path="./历代配种方案及出雏对照2021.xlsx"):
     sheet_list = ["16", "17", "18", "19", "20"]
     depth = len(sheet_list)
     vertex_list = []
     vertex_layer = [[] for _ in range(depth)]
     idx = 0
     # =============================初代点
-    each_vertex_list = read_vertices_from_xlsx(sheet_name=sheet_list[0], id_start=idx, depth=depth)
+    each_vertex_list = read_vertices_from_xlsx(file_path=file_path, sheet_name=sheet_list[0], id_start=idx, depth=depth)
 
     pre_name2idx = dict()
     for i, ver in enumerate(each_vertex_list):
@@ -149,7 +149,7 @@ def build_family_graph_base():
         if depth == 0:
             continue
         print("build start point and edge for sheet:", sheet_name)
-        each_vertex_list, pre_children = read_vertices_edges_from_xlsx(file_path="./历代配种方案及出雏对照2021.xlsx",
+        each_vertex_list, pre_children = read_vertices_edges_from_xlsx(file_path=file_path,
                                                                        sheet_name=sheet_list[depth],
                                                                        pre_sheet_name=sheet_list[depth - 1],
                                                                        id_start=idx, depth=depth, pre_name2ind=pre_name2idx)
@@ -185,4 +185,11 @@ def build_family_graph() -> LayerNetworkGraph:
 
 if __name__ == '__main__':
     # read_population_from_xlsx()
-    build_family_graph()
+    vertex_list, vertex_layer, children_list, pre_name2idx = build_family_graph_base("../历代配种方案及出雏对照2021.xlsx")
+    parents = [[] for _ in range(len(vertex_list))]
+    for i, childs in enumerate(children_list):
+        for ver in childs:
+            parents[ver].append(i)
+    for i, child_list in enumerate(parents):
+        print(vertex_list[i].name, ":", [vertex_list[val].name for val in child_list])
+    # build_family_graph()
