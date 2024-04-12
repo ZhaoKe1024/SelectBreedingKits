@@ -72,7 +72,6 @@ def run_main():
     print("max min")
     print(np.max(kinship_matrix), np.min(kinship_matrix))
     print(np.sum(kinship_matrix))
-
     GAS = GASelector(popus=popus, kinship_matrix=kinship_matrix, male_idxs=list(range(male_num)), female_idxs=list(range(male_num, len(popus))))
     GAS.scheduler()
 

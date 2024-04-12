@@ -131,6 +131,24 @@ class GASelector(object):
                 self.solutions.pop(L - i - 1)
         # print(self.solutions)
 
+    def print_result(self, best_solution: MateSolution):
+        pre_pos = best_solution.vector_male[0]
+        cur_female = best_solution.vector_female[0]
+        print("========----------育种方案----------==========")
+        print("(家系号，雄性个体编号)：[(家系号，雌性个体编号)]")
+        print(f"{self.popus[pre_pos].family_id},{pre_pos}:[({self.popus[cur_female].family_id},{self.num_male+cur_female})", end=', ')
+        idx = 1
+        while idx < len(best_solution):
+            cur_male = best_solution.vector_male[idx]
+            cur_female = best_solution.vector_female[idx]
+            if cur_male != pre_pos:
+                print(']')
+                print(f"{self.popus[cur_male].family_id},{cur_male}", ": [", end='')
+            print(f"({self.popus[cur_female].family_id},{self.num_male+cur_female})", end=', ')
+            pre_pos = cur_male
+            idx += 1
+        print("]")
+
     def scheduler(self):
         self.init_population()
         for iter_idx in range(self.num_iter):
@@ -164,20 +182,22 @@ class GASelector(object):
             if fvalue < best_fitness:
                 best_fitness = fvalue
                 best_solution = solution
-        print("best fv:", best_fitness)
+        print("best fv 群体雌雄间平均亲缘相关系数:", best_fitness)
         best_solution.sort_vector()
-        N = len(best_solution)
-        print(best_solution.vector_male)
-        print(best_solution.vector_female)
-        pre_pos = best_solution.vector_male[0]
-        print("========--------------------==========")
-        print(best_solution.vector_male[0], ": [", best_solution.vector_female[0], end=', ')
-        idx = 1
-        while idx < N:
-            if best_solution.vector_male[idx] != pre_pos:
-                print(']')
-                print(best_solution.vector_male[idx], ": [", end='')
-            print(best_solution.vector_female[idx], end=', ')
-            pre_pos = best_solution.vector_male[idx]
-            idx += 1
-        print("]")
+        # N = len(best_solution)
+        # print(best_solution.vector_male)
+        # print(best_solution.vector_female)
+        self.print_result(best_solution)
+        # pre_pos = best_solution.vector_male[0]
+        # print("========----------育种方案----------==========")
+        # print("雄性个体编号：[雌性个体编号]")
+        # print(best_solution.vector_male[0], ":\t [", best_solution.vector_female[0], end=', ')
+        # idx = 1
+        # while idx < N:
+        #     if best_solution.vector_male[idx] != pre_pos:
+        #         print(']')
+        #         print(best_solution.vector_male[idx], ": [", end='')
+        #     print(best_solution.vector_female[idx], end=', ')
+        #     pre_pos = best_solution.vector_male[idx]
+        #     idx += 1
+        # print("]")
