@@ -15,9 +15,21 @@ def get_new_id():
     return end_number
 
 
+def get_familyid(y: str, m: int, f: int):
+    res = y
+    if m < 10:
+        res += "0" + str(m)
+    else:
+        res += str(m)
+    if f < 10:
+        res += "0" + str(f)
+    else:
+        res += str(f)
+    return res
+
+
 def get_rand_gender():
     if random.random() < 0.3:
         return 1
     else:
         return 0
-

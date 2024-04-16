@@ -138,16 +138,21 @@ class GASelector(object):
         print("(家系号，雄性个体编号)：[(家系号，雌性个体编号)]")
         print(f"{self.popus[pre_pos].family_id},{pre_pos}:[({self.popus[cur_female].family_id},{self.num_male+cur_female})", end=', ')
         idx = 1
+        fout = open("./result.csv", 'w', encoding="utf_8")
         while idx < len(best_solution):
             cur_male = best_solution.vector_male[idx]
             cur_female = best_solution.vector_female[idx]
             if cur_male != pre_pos:
                 print(']')
                 print(f"{self.popus[cur_male].family_id},{cur_male}", ": [", end='')
+                fout.write(f"]\n{self.popus[cur_male].family_id},{cur_male}: [")
             print(f"({self.popus[cur_female].family_id},{self.num_male+cur_female})", end=', ')
+            fout.write(f"({self.popus[cur_female].family_id},{self.num_male+cur_female}), ")
             pre_pos = cur_male
             idx += 1
         print("]")
+        fout.write('\n')
+        fout.close()
 
     def scheduler(self):
         self.init_population()
@@ -187,7 +192,9 @@ class GASelector(object):
         # N = len(best_solution)
         # print(best_solution.vector_male)
         # print(best_solution.vector_female)
-        self.print_result(best_solution)
+
+        # self.print_result(best_solution)
+
         # pre_pos = best_solution.vector_male[0]
         # print("========----------育种方案----------==========")
         # print("雄性个体编号：[雌性个体编号]")
@@ -201,3 +208,4 @@ class GASelector(object):
         #     pre_pos = best_solution.vector_male[idx]
         #     idx += 1
         # print("]")
+        return best_solution

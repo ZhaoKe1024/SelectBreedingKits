@@ -14,7 +14,7 @@ from procedure.xlsxreader import read_population_from_xlsx, get_df_from_xlsx
 from selector.GASelector import GASelector
 from procedure.kinship_on_graph import Kinship
 from selector.entities import Poultry, Vertex
-
+from func import get_familyid
 
 def run_main():
     # # --------------Input Matrix--------------
@@ -73,7 +73,35 @@ def run_main():
     print(np.max(kinship_matrix), np.min(kinship_matrix))
     print(np.sum(kinship_matrix))
     GAS = GASelector(popus=popus, kinship_matrix=kinship_matrix, male_idxs=list(range(male_num)), female_idxs=list(range(male_num, len(popus))))
-    GAS.scheduler()
+    best_solution = GAS.scheduler()
+
+    pre_pos = best_solution.vector_male[0]
+    cur_female = best_solution.vector_female[0]
+    print("========----------育种方案----------==========")
+    print("(家系号，雄性个体编号)：[(家系号，雌性个体编号)]")
+    idx = 1
+    fout = open("./result_name.csv", 'w', encoding="utf_8")
+    fout.write("家系号,公号,母号,亲缘相关系数\n")
+    year, mi, fi = "21", 1, 1
+    print(
+        f"{popus[pre_pos].family_id},{pre_pos}:[({popus[cur_female].family_id},{male_num + cur_female})",
+        end=', ')
+    fout.write(get_familyid(year, mi, fi)+","+popus[pre_pos].wing_id+","+popus[male_num + cur_female].wing_id+","+f"{kinship_matrix[pre_pos, cur_female]}.5f"+'\n')
+    fi += 1
+    while idx < len(best_solution):
+        cur_male = best_solution.vector_male[idx]
+        cur_male_name = popus[cur_male].wing_id
+        cur_female = best_solution.vector_female[idx]
+        cur_female_name = popus[male_num+cur_female].wing_id
+        if cur_male != pre_pos:
+            mi += 1
+        fi += 1
+        fout.write(get_familyid(year, mi, fi) + "," + cur_male_name + "," + cur_female_name +","+f"{kinship_matrix[cur_male, cur_female]:.5f}" + '\n')
+        pre_pos = cur_male
+        idx += 1
+    print("]")
+    fout.write('\n')
+    fout.close()
 
 
 if __name__ == '__main__':
