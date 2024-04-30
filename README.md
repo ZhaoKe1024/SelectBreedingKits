@@ -13,5 +13,8 @@ root(Sound-Representation-KZ)
 └─entities.py  // Poultry object and functions
 └─breedingkits.py  // functions for breeding
 └─xlsxreader.py  // used to read data from xlsx(Excel) files
-└─func.py  // used to simple calculation
+└─func.py  // generate common value
+└─kinship_calc.py  // test the calculation of kinship and inbreed
 ```
+
+
