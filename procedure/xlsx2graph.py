@@ -11,7 +11,8 @@ from selector.entities import Vertex
 from procedure.xlsxreader import get_df_from_xlsx
 
 
-def read_vertices_from_xlsx(file_path="./历代配种方案及出雏对照2021.xlsx", sheet_name: str = "16", id_start=0, depth=0) -> List[
+def read_init_vertices_from_xlsx(file_path="./历代配种方案及出雏对照2021.xlsx", sheet_name: str = "16", id_start=0,
+                                 depth=0) -> List[
     Vertex]:
     sex_table = get_df_from_xlsx(filepath=file_path, sheet_name=sheet_name, cols=[1, 2, 3])
     # print(sex_table.head())
@@ -53,48 +54,76 @@ def read_vertices_from_xlsx(file_path="./历代配种方案及出雏对照2021.x
     cur_vertex_list = male_vertex_list + female_veretx_list
     return cur_vertex_list
 
-    #     if wi in male_set:
-    #         sex_id = 1
-    #         MaleIdxs.append(idx)
-    #         popus.append(Poultry(fi=getattr(row, "_5"), wi=wi, fa_i=fa_i,
-    #                              ma_i=ma_i, sex=1, inbreedc=0.0))
-    #     elif wi in fema_set:
-    #         sex_id = 0
-    #         FemaIdxs.append(idx)
-    #         popus.append(Poultry(fi=getattr(row, "_5"), wi=wi, fa_i=fa_i,
-    #                              ma_i=ma_i, sex=0, inbreedc=0.0))
-    #     else:
-    #         UnknIdxs.append(idx)
-    #         popus.append(Poultry(fi=getattr(row, "_5"), wi=wi, fa_i=fa_i,
-    #                              ma_i=ma_i, sex=0, inbreedc=0.0))
-    #
-    # N = len(parent_df)
-    # print(f"一共有个{N}个体, 雄性个体{len(MaleIdxs)}个,雌性个体{len(FemaIdxs)}个,未知个体{len(UnknIdxs)}个。")
-    # if len(MaleIdxs) < 14:
-    #     # 14-18个雄性
-    #     newIdxs = random.sample(set(UnknIdxs), random.randint(14, 19) - len(MaleIdxs))
-    #     MaleIdxs.extend(newIdxs)
-    #     for ind in newIdxs:
-    #         popus[ind].sex = 1
-    #     FemaIdxs.extend(set(UnknIdxs) - set(newIdxs))
-    #     # print("重新选中：", newIdxs)
-    #     # print(MaleIdxs)
-    # elif len(MaleIdxs) > 18:
-    #     negaIdxs = random.sample(MaleIdxs, len(MaleIdxs) - random.randint(14, 19))
-    #     for ind in negaIdxs:
-    #         popus[ind].sex = 0
-    # #     print(MaleIdxs)
-    # # print("雄性个体选中：")
-    # # for item in MaleIdxs:
-    # #     print(item, end=', ')
-    # print(f"公鸡{len(MaleIdxs)}个, 母鸡{len(FemaIdxs)}个:")
-    # return popus, MaleIdxs, FemaIdxs
+
+def read_vertices_from_xlsx(file_path="./历代配种方案及出雏对照2021.xlsx", sheet_name: str = "16", id_start=0,
+                            depth=0) -> List[
+    Vertex]:
+    sex_table = get_df_from_xlsx(filepath=file_path, sheet_name=sheet_name, cols=[7, 8, 9, 10, 11])
+    print(sex_table.head(10))
+    # -----------------------------------------------
+    # -------------Build Vertex List-----------------
+    # -----------------------------------------------
+    # print(sex_table.iloc[:, 1])
+    male_name_set = set()
+    male_vertex_list = []
+    male_id, female_id = 0, 0
+    for row in sex_table.itertuples():
+        name = row[2]  # getattr(row, "公鸡号")
+        family_id = row[4]  # getattr(row, "家系号")
+        if not name in male_name_set:
+            # name2id[name] = id_start
+            male_name_set.add(name)
+            male_vertex_list.append(Vertex(index=id_start + male_id,
+                                           name=name,
+                                           depth=depth,
+                                           gender=1,
+                                           family_id=family_id))
+            male_id += 1
+        female_veretx_list.append(Vertex(index=id_start + male_id_len + female_id,
+                                         name=row[3],  # getattr(row, "母鸡号"),
+                                         depth=depth,
+                                         gender=0,
+                                         family_id=family_id))
+        name2id[name] = id_start
+        name2id[row[3]] = male_id_len + id_start
+        female_id += 1
+
+    male_id_len = len(set(sex_table.iloc[:, 1]))
+    female_id_len = len(set(sex_table.iloc[:, 2]))
+    # print("number of male poultry in " + sheet_name + ":" + str(male_id_len))
+    # print("number of female poultry in " + sheet_name + ":" + str(female_id_len))
+    name2id = dict()
+    female_veretx_list = []
+    for row in sex_table.itertuples():
+        name = row[2]  # getattr(row, "公鸡号")
+        family_id = row[4]  # getattr(row, "家系号")
+        if not name in male_name_set:
+            # name2id[name] = id_start
+            male_name_set.add(name)
+            male_vertex_list.append(Vertex(index=id_start + male_id,
+                                           name=name,
+                                           depth=depth,
+                                           gender=1,
+                                           family_id=family_id))
+            male_id += 1
+        female_veretx_list.append(Vertex(index=id_start + male_id_len + female_id,
+                                         name=row[3],  # getattr(row, "母鸡号"),
+                                         depth=depth,
+                                         gender=0,
+                                         family_id=family_id))
+        name2id[name] = id_start
+        name2id[row[3]] = male_id_len + id_start
+        female_id += 1
+
+    # print("number of female poultry in " + sheet_name + ":" + str(len(female_veretx_list)))
+    cur_vertex_list = male_vertex_list + female_veretx_list
+    return cur_vertex_list
 
 
 def read_vertices_edges_from_xlsx(file_path, sheet_name, pre_sheet_name,
                                   id_start=0, depth=0, pre_name2ind: dict = None):
-    cur_vertex_list = read_vertices_from_xlsx(file_path=file_path, sheet_name=sheet_name,
-                                              id_start=id_start, depth=depth)
+    cur_vertex_list = read_init_vertices_from_xlsx(file_path=file_path, sheet_name=sheet_name,
+                                                   id_start=id_start, depth=depth)
     # -----------------------------------------------
     # --------------Build Edge List------------------
     # -----------------------------------------------
@@ -127,14 +156,15 @@ def read_vertices_edges_from_xlsx(file_path, sheet_name, pre_sheet_name,
     return cur_vertex_list, pre_children
 
 
-def build_family_graph_base(file_path="./历代配种方案及出雏对照2021.xlsx"):
-    sheet_list = ["16", "17", "18", "19", "20"]
+def build_family_graph_base(file_path="./历代配种方案及出雏对照2021_带性别.xlsx", sheet_list=None):
+    sheet_list = sheet_list
     depth = len(sheet_list)
     vertex_list = []
     vertex_layer = [[] for _ in range(depth)]
     idx = 0
     # =============================初代点
-    each_vertex_list = read_vertices_from_xlsx(file_path=file_path, sheet_name=sheet_list[0], id_start=idx, depth=depth)
+    each_vertex_list = read_init_vertices_from_xlsx(file_path=file_path, sheet_name=sheet_list[0], id_start=idx,
+                                                    depth=depth)
 
     pre_name2idx = dict()
     for i, ver in enumerate(each_vertex_list):
@@ -152,7 +182,8 @@ def build_family_graph_base(file_path="./历代配种方案及出雏对照2021.x
         each_vertex_list, pre_children = read_vertices_edges_from_xlsx(file_path=file_path,
                                                                        sheet_name=sheet_list[depth],
                                                                        pre_sheet_name=sheet_list[depth - 1],
-                                                                       id_start=idx, depth=depth, pre_name2ind=pre_name2idx)
+                                                                       id_start=idx, depth=depth,
+                                                                       pre_name2ind=pre_name2idx)
         pre_name2idx = dict()
         for i, ver in enumerate(each_vertex_list):
             vertex_layer[depth].append(ver.index)
@@ -178,14 +209,17 @@ def build_family_graph_base(file_path="./历代配种方案及出雏对照2021.x
 
 
 def build_family_graph() -> LayerNetworkGraph:
-    vertex_list, vertex_layer, children_list, _ = build_family_graph_base()
+    vertex_list, vertex_layer, children_list, _ = build_family_graph_base(
+        file_path="./历代配种方案及出雏对照2021_带性别.xlsx",
+        sheet_list=["16", "17", "18", "19", "20"])
     layergraph = LayerNetworkGraph(vertex_list=vertex_list, vertex_layer=vertex_layer, children=children_list)
     return layergraph
 
 
 if __name__ == '__main__':
     # read_population_from_xlsx()
-    vertex_list, vertex_layer, children_list, pre_name2idx = build_family_graph_base("../历代配种方案及出雏对照2021.xlsx")
+    vertex_list, vertex_layer, children_list, pre_name2idx = build_family_graph_base(
+        "../历代配种方案及出雏对照2021.xlsx")
     parents = [[] for _ in range(len(vertex_list))]
     for i, childs in enumerate(children_list):
         for ver in childs:

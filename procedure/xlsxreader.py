@@ -7,9 +7,7 @@
 from typing import List
 import pandas as pd
 import random
-
 from pandas import DataFrame
-
 from selector.entities import Poultry
 from analyzer.LayerGraph import LayerNetworkGraph
 

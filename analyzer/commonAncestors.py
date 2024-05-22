@@ -414,7 +414,11 @@ class FamilyAnalyzer(object):
             self.inv_vertex_list[self.__invIdx(indi)].inbreed_coef = 0.
             return 0.
         # print(f"{self.__name(indi)}的双亲:", [self.__name(val) for val in parent])
-        return 0.5 * self.calc_kinship_corr(parent[0], parent[1])
+        parent_kc = self.calc_kinship_corr(parent[0], parent[1])
+        if parent_kc < 1e-9:
+            "parent 在没有近交系数的情况下，还需要计算一下家禽本身的近交系数，取继承"
+            pass
+        return 0.5 * parent_kc
 
     def get_parents(self, idx: int) -> List[int]:
         return [self.__invIdx(val) for val in self.parents[self.__invIdx(idx)]]

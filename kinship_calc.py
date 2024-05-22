@@ -15,7 +15,7 @@ def calc_and_save_as_matrix():
     # kinship.print_parents()
     # kinship.print_all_poultry()
     # print(kinship.calc_kinship_corr(p1="3916", p2="3712"))
-    # print(kinship.calc_kinship_corr(p1="462", p2="461"))
+    print(kinship.calc_kinship_corr(p1="7429", p2="7433"))
     # print(kinship.calc_kinship_corr(p1="7197", p2="7194"))
     # print(kinship.calc_kinship_corr(p1="462", p2="461"))
 

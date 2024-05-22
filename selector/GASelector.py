@@ -33,7 +33,7 @@ class GASelector(object):
 
         self.solutions = []
 
-    def __generate_one_solution(self):
+    def __generate_one_solution(self, m_select=30, f_select=300):
         s = MateSolution(list(range(self.num_male)), self.female_per_male)
         # inserting the rest individuals of the female after divide for male
         for _ in range(self.rest):
