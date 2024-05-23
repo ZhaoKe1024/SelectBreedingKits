@@ -15,7 +15,7 @@ from func import get_familyid
 
 def run_main(gene_idx="20"):
     layergraph, vertex_layer, vertex_list = get_graph_from_data()
-    year2idx = {"16":0, "17":1, "18":2, "19":3, "20":4, "21":5}
+    year2idx = {"16": 0, "17": 1, "18": 2, "19": 3, "20": 4, "21": 5}
     print("Load edges from", gene_idx)
     popus = []
     print("year idx", year2idx[gene_idx])
@@ -71,7 +71,7 @@ def run_main(gene_idx="20"):
     pre_pos = best_solution.vector_male[0]
     cur_female = best_solution.vector_female[0]
     print("========----------育种方案----------==========")
-    print("(家系号，雄性个体编号)：[(家系号，雌性个体编号)]")
+    print("(家系号，雄性个体编号, 雌性个体编号)]")
     idx = 1
     fout = open(f"./result_name_rand_{gene_idx}.csv", 'w', encoding="utf_8")
     fout.write("家系号,公号,母号,亲缘相关系数\n")
@@ -90,8 +90,15 @@ def run_main(gene_idx="20"):
         if cur_male != pre_pos:
             mi += 1
         fi += 1
+        # <<<<<<< Updated upstream
+        # fout.write(get_familyid(year, mi,
+        #                         fi) + "," + cur_male_name + "," + cur_female_name + "," + f"{kinship_matrix[cur_male, cur_female]:.5f}" + '\n')
+        # =======
         fout.write(get_familyid(year, mi,
                                 fi) + "," + cur_male_name + "," + cur_female_name + "," + f"{kinship_matrix[cur_male, cur_female]:.5f}" + '\n')
+        print(get_familyid(year, mi,
+                           fi) + "," + cur_male_name + "," + cur_female_name + "," + f"{kinship_matrix[cur_male, cur_female]:.5f}")
+        # >>>>>>> Stashed changes
         pre_pos = cur_male
         idx += 1
     print("]")
