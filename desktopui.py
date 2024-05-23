@@ -4,6 +4,8 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget
 from widgets.MainWindow import Ui_Dialog
+# from
+from procedure.kinship_on_graph import Kinship
 
 
 class Main(QWidget, Ui_Dialog):
@@ -17,6 +19,18 @@ class Main(QWidget, Ui_Dialog):
         print("self.text_browser.setText(\"Test\")")
         self.textBrowser_1.setText("self.text_browser.setText(\"Test\")")
         self.textBrowser_2.append("Test")
+
+    def open_file(self):
+        "打开文件"
+        pass
+
+    def calc_corrcoef(self):
+        "计算亲缘相关系数"
+        pass
+
+    def calc_inbrcoef(self):
+        "计算近交系数"
+        pass
 
 
 if __name__ == '__main__':
