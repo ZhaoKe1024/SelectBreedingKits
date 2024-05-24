@@ -14,7 +14,7 @@ from func import get_familyid
 
 
 def run_main(gene_idx="20"):
-    layergraph, vertex_layer, vertex_list = get_graph_from_data()
+    layergraph, vertex_layer, vertex_list = get_graph_from_data(file_path="./历代配种方案及出雏对照2021_带性别.xlsx")
     year2idx = {"16": 0, "17": 1, "18": 2, "19": 3, "20": 4, "21": 5}
     print("Load edges from", gene_idx)
     popus = []

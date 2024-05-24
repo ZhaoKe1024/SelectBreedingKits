@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 # @Author : ZhaoKe
 # @Time : 2024-05-23 23:03
+import logging
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QFileDialog, QMessageBox
 from widgets.MainWindow import Ui_Dialog
-# from
+from func import NullNameException
 from graphfromtable import get_graph_from_data
 from procedure.kinship_on_graph import Kinship
 
@@ -25,10 +26,10 @@ class Main(QWidget, Ui_Dialog):
         try:
             self.analyze()
             self.textBrowser_1.setText("已分析文件，可以进行相关计算。")
+            print("已分析文件:", self.file_to_analyze)
         except Exception as e:
             print("有bug")
-            print(e)
-        print("已分析文件:", self.file_to_analyze)
+            logging.exception(e)
 
     def open_file(self, ):
         """打开文件"""
@@ -47,31 +48,11 @@ class Main(QWidget, Ui_Dialog):
                                  # 窗口内添加按钮-QMessageBox.StandardButton，可重复添加使用 | 隔开；如果不写，会有个默认的QMessageBox.StandardButton
                                  QMessageBox.Cancel,  # 设置默认按钮（前提是已经设置有的按钮，若是没有设置，则无效）
                                  )
-            # if api == QMessageBox.Cancel:
-            #     label.setText("您选择了Cancel")
-            # elif api == QMessageBox.Close:
-            #     label.setText("您选择了Close")
             return
         # self.show_text_func()
         # self.kinship = Kinship(file_path=self.file_to_analyze, graph=None)
-        layergraph, vertex_layer, vertex_list = get_graph_from_data()
-        # year2idx = {"16": 0, "17": 1, "18": 2, "19": 3, "20": 4, "21": 5}
-        # print("Load edges from", gene_idx)
-        # popus = []
-        # print("year idx", year2idx[gene_idx])
-        # # return
-        # if gene_idx == "21":
-        #     # print(vertex_layer)
-        #     for idx, item in enumerate(vertex_layer[year2idx[gene_idx]]):
-        #         print(vertex_list[item].name)
-        #         popus.append(vertex_list[item])
-        # else:
-        #     # print(vertex_layer)
-        #     for idx, item in enumerate(vertex_layer[year2idx[gene_idx]]):
-        #         # print(vertex_list[item].name)
-        #         popus.append(vertex_list[item])
-        #         # popus.append(Poultry(fi=f_i, wi=wi, fa_i=fa_i, ma_i=ma_i, sex=0, inbreedc=0.))
-        # # return
+        layergraph, vertex_layer, vertex_list = get_graph_from_data(file_path=self.file_to_analyze)
+
         self.kinship = Kinship(graph=layergraph)
 
     def check_kinship(self):
@@ -113,9 +94,16 @@ class Main(QWidget, Ui_Dialog):
             return
         p1, p2 = ct_part[0], ct_part[1]
         print(p1, p2)
-        res = self.kinship.calc_kinship_corr(p1=p1, p2=p2)
-        print(res)
-        self.textBrowser_2.setText(self.kinship.analyzer.get_just_message())
+        try:
+            res = self.kinship.calc_kinship_corr(p1=p1, p2=p2)
+            print(res)
+            self.textBrowser_2.setText(self.kinship.analyzer.get_just_message())
+        except NullNameException as e:
+            QMessageBox.critical(self, "错误", e.__str__(),  # 窗口提示信息
+                                 QMessageBox.Cancel | QMessageBox.Close,
+                                 # 窗口内添加按钮-QMessageBox.StandardButton，可重复添加使用 | 隔开；如果不写，会有个默认的QMessageBox.StandardButton
+                                 QMessageBox.Cancel,  # 设置默认按钮（前提是已经设置有的按钮，若是没有设置，则无效）
+                                 )
 
     def calc_inbrcoef(self):
         """计算近交系数"""
@@ -128,9 +116,16 @@ class Main(QWidget, Ui_Dialog):
                                  QMessageBox.Cancel,  # 设置默认按钮（前提是已经设置有的按钮，若是没有设置，则无效）
                                  )
         p = ct
-        res = self.kinship.calc_inbreed_coef(p=p)
-        print(res)
-        self.textBrowser_3.setText(self.kinship.analyzer.get_just_message())
+        try:
+            res = self.kinship.calc_inbreed_coef(p=p)
+            print(res)
+            self.textBrowser_3.setText(self.kinship.analyzer.get_just_message())
+        except NullNameException as e:
+            QMessageBox.critical(self, "错误", e.__str__(),  # 窗口提示信息
+                                 QMessageBox.Cancel | QMessageBox.Close,
+                                 # 窗口内添加按钮-QMessageBox.StandardButton，可重复添加使用 | 隔开；如果不写，会有个默认的QMessageBox.StandardButton
+                                 QMessageBox.Cancel,  # 设置默认按钮（前提是已经设置有的按钮，若是没有设置，则无效）
+                                 )
 
 
 if __name__ == '__main__':

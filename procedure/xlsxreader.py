@@ -9,7 +9,6 @@ import pandas as pd
 import random
 from pandas import DataFrame
 from selector.entities import Poultry
-from analyzer.LayerGraph import LayerNetworkGraph
 
 
 def csv_read_test(filepath="./test_xlsx_data.csv"):
@@ -101,43 +100,7 @@ def read_population_from_xlsx():
     #     print(item, end=', ')
     print(f"公鸡{len(MaleIdxs)}个, 母鸡{len(FemaIdxs)}个:")
     return popus, MaleIdxs, FemaIdxs
-    # cur_iter, max_iter = 0, 10  # 先迭代10代看看
-    # lb, ub = 0, 11  # 每一对父母生出孩子数目的随机值：(0, 11)
-    # # 第0 代，近交系数均为0，亲缘关系矩阵均为0
-    # # FN = len(FemaIdxs)
-    # family_matrix = np.zeros((len(MaleIdxs), len(FemaIdxs)))
-    # # 初代都是独立的，所以可以随机选育即可
-    # next_popus = []
-    # Female_num = len(MaleIdxs) * 10
-    # if Female_num > len(FemaIdxs):
-    #     Female_num = len(FemaIdxs)
-    # Allo_Indices = list(range(Female_num))
-    # random.shuffle(Allo_Indices)
-    # # print(Allo_Indices)
-    # Fema_popus = [popus[Allo_Indices[i]] for i in Allo_Indices]
-    # # for item in Fema_popus:
-    # #     print(item)
-    #
-    # # 第0代均匀交配，每个雄性分配同等数目的雌性
-    # male_num = len(MaleIdxs)
-    # for i, item in enumerate(Fema_popus):
-    #     popus[MaleIdxs[i % male_num]].add_spouse(Fema_popus[i])
-    # for i in MaleIdxs:
-    #     popus[i].print_spouses()
-    #
-    # # 第1 代，近交系数均为0，亲缘关系开始初始化为非0
-    # new_popus = []
-    # for i in range(male_num):
-    #     new_popus.extend(popus[MaleIdxs[i]].breeding_offsprings())
-    # ind = 0
-    # for item in new_popus:
-    #     print(item)
-    #     item.ancestry.backtracking()
-    #     ind += 1
-    #     if ind > 10:
-    #         break
-    #
-    # # 第2 代开始，近交系数开始不为0，需要根据保留的系谱来计算
+
 
 
 if __name__ == '__main__':

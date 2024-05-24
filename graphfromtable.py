@@ -10,7 +10,7 @@ from analyzer.LayerGraph import LayerNetworkGraph
 from procedure.xlsx2graph import build_family_graph_base
 
 
-def get_graph_from_data(file_path="./历代配种方案及出雏对照2021_带性别.xlsx"):
+def get_graph_from_data(file_path):
     # # --------------Input Matrix--------------
     # popus, male_idxs, female_idxs = read_population_from_xlsx()
     # # print()
@@ -24,7 +24,7 @@ def get_graph_from_data(file_path="./历代配种方案及出雏对照2021_带�
     print("pre_name2idx:")
     print(pre_name2idx)
     # ------------Poultry read and build-------------------------
-    edges_df = get_df_from_xlsx(filepath="./历代配种方案及出雏对照2021_带性别.xlsx", sheet_name="20",
+    edges_df = get_df_from_xlsx(filepath=file_path, sheet_name="20",
                                 cols=[7, 8, 9, 10])
     # print(edges_df.columns)
     # new_children = []

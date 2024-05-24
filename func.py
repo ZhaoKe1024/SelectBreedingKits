@@ -33,3 +33,35 @@ def get_rand_gender():
         return 1
     else:
         return 0
+
+
+class NullNameException(Exception):
+    def __init__(self, msg):
+        self.msg = msg
+
+    def __str__(self):
+        return self.msg
+
+# from PIL import Image
+#
+# def png2ico():
+#     img = Image.open(r"./softwarelogo.png")
+#     # icon_sizes = [(16, 16), (32, 32), (48, 48), (64, 64)]
+#     icon_sizes = [(64, 64)]
+#     img.save('logo.ico', sizes=icon_sizes)
+
+
+# def tolist():
+#     import os
+#     root = "C:/Program Files (zk)/PythonOperatOptimiz/SelectBreeding/"
+#     for item in os.listdir(root):
+#         if os.path.isdir(item):
+#             for ite in os.listdir(item):
+#                 print(root+item+'/'+ite)
+#         else:
+#             print(root+item)
+#
+#
+# if __name__ == '__main__':
+#     # png2ico()
+#     tolist()

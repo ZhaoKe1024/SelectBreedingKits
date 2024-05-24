@@ -390,7 +390,7 @@ class FamilyAnalyzer(object):
     def get_just_message(self) -> str:
         return self.Result_ancestors
 
-    def calc_kinship_corr(self, ind1: int, ind2: int, final: int) -> float:
+    def calc_kinship_corr(self, ind1: int, ind2: int, final: int = 4) -> float:
         """
 
         :param final:
@@ -403,8 +403,8 @@ class FamilyAnalyzer(object):
         elif final == 1:
             self.Result_ancestors += f"个体 {self.__name(ind1)} 和 {self.__name(ind2)} 的共同祖先的编号:["
         common_ancestors = self.find_all_common_ancestors(ind1, ind2)
-        print(f"common ancestors of {self.__name(ind1)} and {self.__name(ind2)}:")
-        print('\t', [self.__name(val) for val in common_ancestors])
+        # print(f"common ancestors of {self.__name(ind1)} and {self.__name(ind2)}:")
+        # print('\t', [self.__name(val) for val in common_ancestors])
         if final in [0, 1]:
             # for val in common_ancestors:
             #     self.Result_ancestors += self.__name(val) + ', '
@@ -415,7 +415,7 @@ class FamilyAnalyzer(object):
         try:
             for anc in common_ancestors:
                 item = self.calc_path_prob(ind1, ind2, anc)
-                print(f"ind {self.__name(ind1)} and {self.__name(ind2)} to {self.__name(anc)}: item: {item}")
+                # print(f"ind {self.__name(ind1)} and {self.__name(ind2)} to {self.__name(anc)}: item: {item}")
                 corr += item
         except Exception as e:
             print(e)
@@ -427,10 +427,10 @@ class FamilyAnalyzer(object):
         res = corr / math.sqrt((1 + inb1) * (1 + inb2))
         if final in [0, 1]:
             self.Result_ancestors += str(res) + '\n'
-        print(self.Result_ancestors)
+        # print(self.Result_ancestors)
         return res
 
-    def calc_inbreed_coef(self, indi: int, final: int = 3) -> float:
+    def calc_inbreed_coef(self, indi: int, final: int = 4) -> float:
         """
 
         :param indi:
@@ -455,7 +455,7 @@ class FamilyAnalyzer(object):
             pass
         if final == 0:
             self.Result_ancestors += f"个体 {self.__name(indi)} 的近交系数为{0.5 * parent_kc}。"
-        print(self.Result_ancestors)
+        # print(self.Result_ancestors)
         return 0.5 * parent_kc
 
     def get_parents(self, idx: int) -> List[int]:

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # @Author : ZhaoKe
 # @Time : 2024-04-07 23:06
-from analyzer.LayerGraph import LayerNetworkGraph
 from analyzer.commonAncestors import FamilyAnalyzer
 from procedure.xlsx2graph import build_family_graph
+from func import NullNameException
 
 
 class Kinship(object):
@@ -20,7 +20,7 @@ class Kinship(object):
         # self.__initialize()
 
     # def __initialize(self):
-        # self.analyzer = FamilyAnalyzer(familyGraph=)
+    # self.analyzer = FamilyAnalyzer(familyGraph=)
 
     def add_generation(self, new_vertices, new_parents):
 
@@ -36,11 +36,17 @@ class Kinship(object):
             self.name2index[ver.name] = j
 
     def calc_kinship_corr(self, p1: str, p2: str):
+        if p1 not in self.name2index:
+            raise NullNameException(f"不存在编号为 {p1} 的个体。")
+        if p2 not in self.name2index:
+            raise NullNameException(f"不存在编号为 {p2} 的个体。")
         return self.analyzer.calc_kinship_corr(ind1=self.name2index[p1],
                                                ind2=self.name2index[p2], final=0)
 
     def calc_inbreed_coef(self, p: str):
         # print("--->")
+        if p not in self.name2index:
+            raise NullNameException(f"不存在编号为 {p} 的个体。")
         return self.analyzer.calc_inbreed_coef(indi=self.name2index[p], final=0)
 
     def print_all_poultry(self):
@@ -56,8 +62,8 @@ class Kinship(object):
             print(self.analyzer.inv_vertex_list[i].name, ":", par)
 
     # def print_edges(self):
-        # for edge in self.family_graph.edge_list:
-        #     print(edge)
+    # for edge in self.family_graph.edge_list:
+    #     print(edge)
 
-        # for edge in self.family_graph.children:
-        #     print(edge)
+    # for edge in self.family_graph.children:
+    #     print(edge)
