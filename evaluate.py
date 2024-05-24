@@ -9,12 +9,12 @@ from graphfromtable import get_graph_from_data
 from procedure.kinship_on_graph import Kinship
 
 
-def evaluate_data(filepath="./历代配种方案及出雏对照2021_带性别.xlsx"):
-    layergraph, vertex_layer, vertex_list = get_graph_from_data()
+def evaluate_data(basefile="./历代配种方案及出雏对照2021_带性别.xlsx", evalfile="./历代配种方案及出雏对照2021_带性别.xlsx"):
+    layergraph, vertex_layer, vertex_list = get_graph_from_data(file_path=basefile)
     kinship = Kinship(graph=layergraph)
     sheet_list = ["16", "17", "18", "19", "20"]
     for sheet_name in sheet_list[1:]:
-        edges_df = get_df_from_xlsx(filepath="./历代配种方案及出雏对照2021_带性别.xlsx", sheet_name=sheet_name,
+        edges_df = get_df_from_xlsx(filepath=evalfile, sheet_name=sheet_name,
                                     cols=[1, 2, 3])
         with open(f"./evaluate_{sheet_name}.csv", 'w', encoding="utf_8") as fout:
             fout.write("家系号,公号,母号,亲缘相关系数\n")

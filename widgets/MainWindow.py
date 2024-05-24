@@ -15,43 +15,81 @@ class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(840, 600)
-
+        left_margin1 = 35
+        left_margin2 = 440
+        # 遗传族谱分析器
         self.Label1 = QtWidgets.QLabel(Dialog)
-        self.Label1.setGeometry(QtCore.QRect(10, 10, 121, 41))
+        self.Label1.setGeometry(QtCore.QRect(left_margin1, 5, 180, 81))
         font = QtGui.QFont()
         font.setFamily("Adobe Devanagari")
         font.setPointSize(12)
         self.Label1.setFont(font)
         self.Label1.setObjectName("Label1")
-
+        # 选中文件
         self.PushButton1 = QtWidgets.QPushButton(Dialog)
-        self.PushButton1.setGeometry(QtCore.QRect(30, 60, 101, 31))
+        self.PushButton1.setGeometry(QtCore.QRect(left_margin1, 70, 101, 31))
         font = QtGui.QFont()
         font.setFamily("Adobe Devanagari")
-        font.setPointSize(12)
+        font.setPointSize(10)
         self.PushButton1.setFont(font)
         self.PushButton1.setObjectName("PushButton1")
-
+        # 示例
         self.Label2 = QtWidgets.QLabel(Dialog)
-        self.Label2.setGeometry(QtCore.QRect(160, 70, 271, 21))
+        self.Label2.setGeometry(QtCore.QRect(left_margin1+125, 70, 271, 21))
         font = QtGui.QFont()
         font.setFamily("Adobe Devanagari")
         font.setPointSize(8)
         self.Label2.setFont(font)
         self.Label2.setCursor(QtGui.QCursor(QtCore.Qt.UpArrowCursor))
         self.Label2.setObjectName("Label2")
-
+        # 分析文件
         self.PushButton2 = QtWidgets.QPushButton(Dialog)
-        self.PushButton2.setGeometry(QtCore.QRect(40, 110, 75, 23))
+        self.PushButton2.setGeometry(QtCore.QRect(left_margin1, 110, 75, 23))
         self.PushButton2.setObjectName("PushButton2")
-
+        # 分析文件的结果
         self.textBrowser_1 = QtWidgets.QTextBrowser(Dialog)
-        self.textBrowser_1.setGeometry(QtCore.QRect(50, 150, 381, 70))
+        self.textBrowser_1.setGeometry(QtCore.QRect(left_margin1, 150, 381, 70))
         self.textBrowser_1.setObjectName("textBrowser_1")
+
+        # 配对方案检查器
+        self.Label3 = QtWidgets.QLabel(Dialog)
+        self.Label3.setGeometry(QtCore.QRect(left_margin2, 5, 180, 81))
+        font = QtGui.QFont()
+        font.setFamily("Adobe Devanagari")
+        font.setPointSize(12)
+        self.Label3.setFont(font)
+        self.Label3.setObjectName("Label1")
+        # 示例
+        self.ExampleLabel2 = QtWidgets.QLabel(Dialog)
+        self.ExampleLabel2.setGeometry(QtCore.QRect(left_margin2+130, 70, 271, 21))
+        font = QtGui.QFont()
+        font.setFamily("Adobe Devanagari")
+        font.setPointSize(8)
+        self.ExampleLabel2.setFont(font)
+        self.ExampleLabel2.setCursor(QtGui.QCursor(QtCore.Qt.UpArrowCursor))
+        self.ExampleLabel2.setObjectName("Label2")
+        # 打开评估文件
+        self.OpenButton2 = QtWidgets.QPushButton(Dialog)
+        self.OpenButton2.setGeometry(QtCore.QRect(left_margin2, 70, 101, 31))
+        font = QtGui.QFont()
+        font.setFamily("Adobe Devanagari")
+        font.setPointSize(10)
+        self.OpenButton2.setFont(font)
+        self.OpenButton2.setObjectName("PushButton1")
+        # 评估文件
+        self.EvalButton = QtWidgets.QPushButton(Dialog)
+        self.EvalButton.setGeometry(QtCore.QRect(left_margin2, 110, 75, 23))
+        self.EvalButton.setObjectName("PushButton2")
+        # 评估文件的结果
+        self.textBrowser_4 = QtWidgets.QTextBrowser(Dialog)
+        self.textBrowser_4.setGeometry(QtCore.QRect(left_margin2, 150, 381, 70))
+        self.textBrowser_4.setObjectName("textBrowser_1")
+
+        # ======================================
 
         # 亲缘相关系数计算
         self.Label4 = QtWidgets.QLabel(Dialog)
-        self.Label4.setGeometry(QtCore.QRect(50, 230, 190, 41))
+        self.Label4.setGeometry(QtCore.QRect(left_margin1, 230, 190, 41))
         font = QtGui.QFont()
         font.setFamily("Adobe Devanagari")
         font.setPointSize(11)
@@ -60,7 +98,7 @@ class Ui_Dialog(object):
 
         # 个体近交系数计算
         self.Label5 = QtWidgets.QLabel(Dialog)
-        self.Label5.setGeometry(QtCore.QRect(440, 230, 190, 41))
+        self.Label5.setGeometry(QtCore.QRect(left_margin2, 230, 190, 41))
         font = QtGui.QFont()
         font.setFamily("Adobe Devanagari")
         font.setPointSize(11)
@@ -69,28 +107,28 @@ class Ui_Dialog(object):
 
         # 请输入两个个体编号
         self.Label6 = QtWidgets.QLabel(Dialog)
-        self.Label6.setGeometry(QtCore.QRect(50, 270, 190, 21))
+        self.Label6.setGeometry(QtCore.QRect(left_margin1, 270, 190, 21))
         self.Label6.setObjectName("Label6")
 
         # # 可以用空格或者逗号隔开
         self.InputBox1 = QtWidgets.QLineEdit(Dialog)
-        self.InputBox1.setGeometry(QtCore.QRect(50, 300, 190, 41))
+        self.InputBox1.setGeometry(QtCore.QRect(left_margin1, 300, 190, 41))
         self.InputBox1.setObjectName("InputBox1")
         self.InputBox1.setPlaceholderText("(可用空格或逗号隔开)")  # default value of inputbox
 
         # 请输入个体的编号
         self.Label7 = QtWidgets.QLabel(Dialog)
-        self.Label7.setGeometry(QtCore.QRect(440, 270, 190, 21))
+        self.Label7.setGeometry(QtCore.QRect(left_margin2, 270, 190, 21))
         self.Label7.setObjectName("Label7")
 
         # （空白）
         self.InputBox2 = QtWidgets.QLineEdit(Dialog)
-        self.InputBox2.setGeometry(QtCore.QRect(440, 300, 150, 41))
+        self.InputBox2.setGeometry(QtCore.QRect(left_margin2, 300, 150, 41))
         self.InputBox2.setObjectName("InputBox2")
 
         # 按钮
         self.CalcButton1 = QtWidgets.QPushButton(Dialog)
-        self.CalcButton1.setGeometry(QtCore.QRect(50, 350, 101, 31))
+        self.CalcButton1.setGeometry(QtCore.QRect(left_margin1, 350, 101, 31))
         font = QtGui.QFont()
         font.setFamily("Adobe Devanagari")
         font.setPointSize(9)
@@ -98,7 +136,7 @@ class Ui_Dialog(object):
         self.CalcButton1.setObjectName("CalcButton1")
 
         self.CalcButton2 = QtWidgets.QPushButton(Dialog)
-        self.CalcButton2.setGeometry(QtCore.QRect(440, 350, 101, 31))
+        self.CalcButton2.setGeometry(QtCore.QRect(left_margin2, 350, 101, 31))
         font = QtGui.QFont()
         font.setFamily("Adobe Devanagari")
         font.setPointSize(9)
@@ -107,12 +145,12 @@ class Ui_Dialog(object):
 
         # 亲缘相关系数的结果框
         self.textBrowser_2 = QtWidgets.QTextBrowser(Dialog)
-        self.textBrowser_2.setGeometry(QtCore.QRect(50, 390, 360, 160))
+        self.textBrowser_2.setGeometry(QtCore.QRect(left_margin1, 390, 360, 160))
         self.textBrowser_2.setObjectName("textBrowser")
 
         # 个体近交系数的结果框
         self.textBrowser_3 = QtWidgets.QTextBrowser(Dialog)
-        self.textBrowser_3.setGeometry(QtCore.QRect(440, 390, 360, 160))
+        self.textBrowser_3.setGeometry(QtCore.QRect(left_margin2, 390, 360, 160))
         self.textBrowser_3.setObjectName("textBrowser_2")
 
         self.retranslateUi(Dialog)
@@ -122,9 +160,13 @@ class Ui_Dialog(object):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
         self.Label1.setText(_translate("Dialog", "遗传族谱分析器"))
+        self.Label3.setText(_translate("Dialog", "配对方案评估器"))
         self.PushButton1.setText(_translate("Dialog", "选中文件"))
-        self.Label2.setText(_translate("Dialog", "示例：历代配种方案及出雏对照2021"))
+        self.OpenButton2.setText(_translate("Dialog", "选中文件"))
+        self.Label2.setText(_translate("Dialog", "./配种方案及出雏对照.xlsx"))
+        self.ExampleLabel2.setText(_translate("Dialog", "./配种方案及出雏对照.xlsx"))
         self.PushButton2.setText(_translate("Dialog", "分析文件"))
+        self.EvalButton.setText(_translate("Dialog", "评估文件"))
         self.Label4.setText(_translate("Dialog", "亲缘相关系数计算"))
         self.Label5.setText(_translate("Dialog", "个体近交系数计算"))
         self.CalcButton1.setText(_translate("Dialog", "计算"))
