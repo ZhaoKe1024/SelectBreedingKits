@@ -208,9 +208,9 @@ def build_family_graph_base(file_path="./历代配种方案及出雏对照2021_�
     return vertex_list, vertex_layer, children_list, pre_name2idx
 
 
-def build_family_graph() -> LayerNetworkGraph:
+def build_family_graph(file_path="./历代配种方案及出雏对照2021_带性别.xlsx") -> LayerNetworkGraph:
     vertex_list, vertex_layer, children_list, _ = build_family_graph_base(
-        file_path="./历代配种方案及出雏对照2021_带性别.xlsx",
+        file_path=file_path,
         sheet_list=["16", "17", "18", "19", "20"])
     layergraph = LayerNetworkGraph(vertex_list=vertex_list, vertex_layer=vertex_layer, children=children_list)
     return layergraph

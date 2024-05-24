@@ -7,11 +7,11 @@ from procedure.xlsx2graph import build_family_graph
 
 
 class Kinship(object):
-    def __init__(self, graph=None):
+    def __init__(self, graph=None, file_path="./历代配种方案及出雏对照2021_带性别.xlsx"):
         if graph:
             self.family_graph = graph
         else:
-            self.family_graph = build_family_graph()
+            self.family_graph = build_family_graph(file_path)
         self.analyzer = FamilyAnalyzer(familyGraph=self.family_graph)
         self.N = len(self.family_graph)
         self.name2index = dict()

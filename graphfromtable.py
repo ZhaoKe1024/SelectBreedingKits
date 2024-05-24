@@ -10,7 +10,7 @@ from analyzer.LayerGraph import LayerNetworkGraph
 from procedure.xlsx2graph import build_family_graph_base
 
 
-def get_graph_from_data():
+def get_graph_from_data(file_path="./历代配种方案及出雏对照2021_带性别.xlsx"):
     # # --------------Input Matrix--------------
     # popus, male_idxs, female_idxs = read_population_from_xlsx()
     # # print()
@@ -18,7 +18,7 @@ def get_graph_from_data():
     # kinship_matrix = 1 / 16 + 1 / 16 * np.random.randn(len(male_idxs), len(female_idxs))
     sheet_list = ["16", "17", "18", "19", "20"]
     vertex_list, vertex_layer, children_list, pre_name2idx = build_family_graph_base(
-        file_path="./历代配种方案及出雏对照2021_带性别.xlsx",
+        file_path=file_path,
         sheet_list=sheet_list)
     N = len(vertex_list)
     print("pre_name2idx:")
