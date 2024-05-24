@@ -156,6 +156,9 @@ class FamilyAnalyzer(object):
             # inv graph need reverse the index of vertex
             self.__add_edge(self.num_ver - 1 - edge[1], self.num_ver - 1 - edge[0])
 
+        # 用于返回结果的一些结构
+        self.Result_ancestors = ""
+
     def add_generation(self, new_vertices, new_parents):
         # 计数新的个体
         N = len(new_vertices)
@@ -175,7 +178,6 @@ class FamilyAnalyzer(object):
         self.inv_vertex_layer.insert(0, list(range(N)))
         # self.inv_edge_list
         self.parents = new_parents + self.parents
-
 
     def __invV(self, idx):
         return self.inv_vertex_list[self.num_ver - 1 - idx]
@@ -358,7 +360,7 @@ class FamilyAnalyzer(object):
         ind2_gene = self.inv_vertex_list[self.__invIdx(ind2)].depth
         # print(gene_origin, ind1_gene, ind2_gene)
         coef_base = 1. / (1 << (abs(gene_origin - ind1_gene) + abs(gene_origin - ind2_gene)))
-        if self.inv_vertex_list[ancestor].depth == self.num_ver-1:
+        if self.inv_vertex_list[ancestor].depth == self.num_ver - 1:
             return coef_base
         else:
             FA = self.inv_vertex_list[ancestor].inbreed_coef
@@ -385,25 +387,56 @@ class FamilyAnalyzer(object):
     def __name(self, ind: int):
         return self.inv_vertex_list[ind].name
 
-    def calc_kinship_corr(self, ind1: int, ind2: int) -> float:
+    def get_just_message(self) -> str:
+        return self.Result_ancestors
+
+    def calc_kinship_corr(self, ind1: int, ind2: int, final: int) -> float:
         """
 
+        :param final:
         :param ind1: forward index of vertex 1
         :param ind2: forward index of vertex 2
         :return:
         """
+        if final == 0:
+            self.Result_ancestors = f"个体 {self.__name(ind1)} 和 {self.__name(ind2)} 的共同祖先的编号:["
+        elif final == 1:
+            self.Result_ancestors += f"个体 {self.__name(ind1)} 和 {self.__name(ind2)} 的共同祖先的编号:["
         common_ancestors = self.find_all_common_ancestors(ind1, ind2)
-        # print(f"common ancestors of {self.__name(ind1)} and {self.__name(ind2)}:")
-        # print('\t', [self.__name(val) for val in common_ancestors])
+        print(f"common ancestors of {self.__name(ind1)} and {self.__name(ind2)}:")
+        print('\t', [self.__name(val) for val in common_ancestors])
+        if final in [0, 1]:
+            # for val in common_ancestors:
+            #     self.Result_ancestors += self.__name(val) + ', '
+            self.Result_ancestors += ",".join([self.__name(val) for val in common_ancestors])
+            self.Result_ancestors += "]\n"
         corr = 0.
         # return corr
-        for anc in common_ancestors:
-            item = self.calc_path_prob(ind1, ind2, anc)
-            # print(f"ind {self.__name(ind1)} and {self.__name(ind2)} to {self.__name(anc)}: item: {item}")
-            corr += item
-        return corr / math.sqrt((1+self.calc_inbreed_coef(ind1))*(1+self.calc_inbreed_coef(ind2)))
+        try:
+            for anc in common_ancestors:
+                item = self.calc_path_prob(ind1, ind2, anc)
+                print(f"ind {self.__name(ind1)} and {self.__name(ind2)} to {self.__name(anc)}: item: {item}")
+                corr += item
+        except Exception as e:
+            print(e)
+        inb1 = self.calc_inbreed_coef(ind1, final=final + 1)
+        inb2 = self.calc_inbreed_coef(ind2, final=final + 1)
+        if final in [0, 1]:
+            self.Result_ancestors += f"个体 {self.__name(ind1)} 和 {self.__name(ind2)} 的近交系数分别为：{inb1}, {inb2}。\n"
+            self.Result_ancestors += f"个体 {self.__name(ind1)} 和 {self.__name(ind2)} 的亲缘相关系数："
+        res = corr / math.sqrt((1 + inb1) * (1 + inb2))
+        if final in [0, 1]:
+            self.Result_ancestors += str(res) + '\n'
+        print(self.Result_ancestors)
+        return res
 
-    def calc_inbreed_coef(self, indi: int) -> float:
+    def calc_inbreed_coef(self, indi: int, final: int = 3) -> float:
+        """
+
+        :param indi:
+        :param final: default 3 so that wonn't raise Exception
+        :return:
+        """
         # print("--------------inbreed coefficient----------------")
         # print(self.inv_vertex_list[self.__invIdx(indi)].depth)
         # if self.inv_vertex_list[self.__invIdx(indi)].depth == len(self.inv_vertex_layer)-1:
@@ -414,10 +447,15 @@ class FamilyAnalyzer(object):
             self.inv_vertex_list[self.__invIdx(indi)].inbreed_coef = 0.
             return 0.
         # print(f"{self.__name(indi)}的双亲:", [self.__name(val) for val in parent])
-        parent_kc = self.calc_kinship_corr(parent[0], parent[1])
+        if final == 0:
+            self.Result_ancestors = f"个体 {self.__name(indi)} 的父母的编号:[{self.__name(parent[0])} 和 {self.__name(parent[1])}]。\n"
+        parent_kc = self.calc_kinship_corr(parent[0], parent[1], final=final + 1)
         if parent_kc < 1e-9:
             "parent 在没有近交系数的情况下，还需要计算一下家禽本身的近交系数，取继承"
             pass
+        if final == 0:
+            self.Result_ancestors += f"个体 {self.__name(indi)} 的近交系数为{0.5 * parent_kc}。"
+        print(self.Result_ancestors)
         return 0.5 * parent_kc
 
     def get_parents(self, idx: int) -> List[int]:
@@ -439,7 +477,7 @@ def example_all():
     print("个体 index:", p)
     print("亲缘相关系数：", analyzer.calc_kinship_corr(24, 25))
     print("个体 index:", p)
-    print("个体近交系数：", 0.5*analyzer.calc_inbreed_coef(p))
+    print("个体近交系数：", 0.5 * analyzer.calc_inbreed_coef(p))
     print("====================")
     p = 24
     print("个体 index:", p)
@@ -453,7 +491,7 @@ def example_all():
     common_ancs = analyzer.find_all_common_ancestors(p1, p2)
     print(common_ancs)
     print("亲缘相关系数：", analyzer.calc_kinship_corr(p1, p2))  #
-    print("个体近交系数：", analyzer.calc_inbreed_coef(24), "eq?", 0.5*analyzer.calc_kinship_corr(p1, p2))
+    print("个体近交系数：", analyzer.calc_inbreed_coef(24), "eq?", 0.5 * analyzer.calc_kinship_corr(p1, p2))
 
 
 if __name__ == "__main__":

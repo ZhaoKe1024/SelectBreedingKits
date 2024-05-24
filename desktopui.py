@@ -115,7 +115,7 @@ class Main(QWidget, Ui_Dialog):
         print(p1, p2)
         res = self.kinship.calc_kinship_corr(p1=p1, p2=p2)
         print(res)
-        self.textBrowser_2.setText(str(res))
+        self.textBrowser_2.setText(self.kinship.analyzer.get_just_message())
 
     def calc_inbrcoef(self):
         """计算近交系数"""
@@ -129,7 +129,8 @@ class Main(QWidget, Ui_Dialog):
                                  )
         p = ct
         res = self.kinship.calc_inbreed_coef(p=p)
-        self.textBrowser_3.setText(str(res))
+        print(res)
+        self.textBrowser_3.setText(self.kinship.analyzer.get_just_message())
 
 
 if __name__ == '__main__':

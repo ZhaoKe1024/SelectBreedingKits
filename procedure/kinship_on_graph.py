@@ -37,11 +37,11 @@ class Kinship(object):
 
     def calc_kinship_corr(self, p1: str, p2: str):
         return self.analyzer.calc_kinship_corr(ind1=self.name2index[p1],
-                                               ind2=self.name2index[p2])
+                                               ind2=self.name2index[p2], final=0)
 
     def calc_inbreed_coef(self, p: str):
         # print("--->")
-        return self.analyzer.calc_inbreed_coef(indi=self.name2index[p])
+        return self.analyzer.calc_inbreed_coef(indi=self.name2index[p], final=0)
 
     def print_all_poultry(self):
         for i, ver in enumerate(self.family_graph.vertex_list):
