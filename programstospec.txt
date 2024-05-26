@@ -1,0 +1,17 @@
+#!/user/zhao/miniconda3/envs/torch-0
+# -*- coding: utf_8 -*-
+# @Time : 2024/5/25 8:45
+# @Author: ZhaoKe
+# @File : programstospec.py
+# @Software: PyCharm
+a = Analysis(
+    ['desktopui.py',
+    'func.py',
+    'graphfromtable.py',
+    'C:/Program Files (zk)/PythonOperatOptimiz/SelectBreeding/analyzer/commonAncestors.py',
+    'C:/Program Files (zk)/PythonOperatOptimiz/SelectBreeding/analyzer/data_example.py',
+    'C:/Program Files (zk)/PythonOperatOptimiz/SelectBreeding/analyzer/LayerGraph.py',
+    'C:/Program Files (zk)/PythonOperatOptimiz/SelectBreeding/procedure/kinship_on_graph.py',
+    'C:/Program Files (zk)/PythonOperatOptimiz/SelectBreeding/procedure/xlsx2graph.py',
+    'C:/Program Files (zk)/PythonOperatOptimiz/SelectBreeding/procedure/xlsxreader.py',
+    'C:/Program Files (zk)/PythonOperatOptimiz/SelectBreeding/widgets/MainWindow.py',],
