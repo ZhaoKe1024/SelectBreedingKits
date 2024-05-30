@@ -7,21 +7,20 @@
 import sys
 import logging
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QFileDialog, QMessageBox
-from widgets.MainWindow import Ui_Dialog
 from func import NullNameException
 from graphfromtable import get_graph_from_data
 from procedure.kinship_on_graph import Kinship
 from procedure.xlsxreader import get_df_from_xlsx
+from BreedingMain import run_main
 
 
-class Main(object):
+class IBCalculator(object):
     def __init__(self):
-        super(Main, self).__init__()
+        super(IBCalculator, self).__init__()
         self.file_to_analyze = None
         self.file_to_evaluate = None
         self.kinship = None
-        self.keys = ["af", ]
+        self.keys = ["analyse", "select", "eval", "p", "p1", "curr_analyse", "current_eval"]
 
     def execute_all(self, kv_list):
         ind = 1
@@ -35,9 +34,12 @@ class Main(object):
                 ind += 2
 
     def execute(self, key, value, key2=None, value2=None):
-        if key not in self.keys:
+
+        if key[2:] not in self.keys:
+            print(key)
             raise Exception("Unknown key.")
         print(key, "-", "value")
+
         if key[2:] == "analyse":
             self.file_to_analyze = value
             self.analyze()
@@ -46,12 +48,21 @@ class Main(object):
                 raise Exception("please analyse file first.")
             self.file_to_evaluate = value
             self.evaluate_solution()
+        elif key[2:] == "select":
+            run_main(gene_idx=value)
         elif key[2:] == "p":
             self.calc_inbrcoef(ct=value)
         elif key[2:] == "p1":
-            self.calc_corrcoef(p1=value, p2=value2)
+            if key2[2:] == "p2":
+                self.calc_corrcoef(p1=value, p2=value2)
+            else:
+                raise Exception(f"Unknown key2: {key2}")
+        elif key[2:] == "current_analyse":
+            return self.file_to_analyze
+        elif key[2:] == "current_eval":
+            return self.file_to_evaluate
         else:
-            raise Exception("Unknown key")
+            raise Exception(f"Unknown key: {key}")
 
     # def show_text_func(self):
     #     try:
@@ -143,8 +154,10 @@ class Main(object):
 
 def run(args):
     print(args)
-    for item in args:
-        print(type(item))
+    # for item in args:
+    #     print(type(item))
+    calc = IBCalculator()
+    calc.execute_all(args)
     # pass
 
 

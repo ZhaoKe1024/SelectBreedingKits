@@ -21,8 +21,8 @@ def get_graph_from_data(file_path):
         file_path=file_path,
         sheet_list=sheet_list)
     N = len(vertex_list)
-    print("pre_name2idx:")
-    print(pre_name2idx)
+    # print("pre_name2idx:")
+    # print(pre_name2idx)
     # ------------Poultry read and build-------------------------
     edges_df = get_df_from_xlsx(filepath=file_path, sheet_name="20",
                                 cols=[7, 8, 9, 10])
@@ -47,8 +47,8 @@ def get_graph_from_data(file_path):
     vertex_layer.append([ver.index for ver in new_vertices])
     # children_list =
     idx2year = {0: "16", 1: "17", 2: "18", 3: "19", 4: "20", 5:"21"}
-    for idx, item in enumerate(vertex_layer):
-        print(idx2year[idx])
-        print([vertex_list[j].name for j in item])
+    # for idx, item in enumerate(vertex_layer):
+    #     print(idx2year[idx])
+    #     print([vertex_list[j].name for j in item])
     layergraph = LayerNetworkGraph(vertex_list=vertex_list, vertex_layer=vertex_layer, children=children_list)
     return layergraph, vertex_layer, vertex_list

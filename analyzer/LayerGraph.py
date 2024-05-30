@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # @Author : ZhaoKe
 # @Time : 2024-04-06 23:41
-
 # Neural Network Layer wish Graph
 # 每一层的节点之间无边，层与层之间单向连接
 from typing import List

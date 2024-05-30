@@ -56,10 +56,10 @@ def run_main(gene_idx="20"):
     for i in range(male_num):
         for j in range(female_num):
             kinship_matrix[i][j] = kinship.calc_kinship_corr(p1=popus[i].name, p2=popus[male_num + j].name)
-    print(kinship_matrix)
-    print("max min")
-    print(np.max(kinship_matrix), np.min(kinship_matrix))
-    print(np.sum(kinship_matrix))
+    # print(kinship_matrix)
+    # print("max min")
+    # print(np.max(kinship_matrix), np.min(kinship_matrix))
+    # print(np.sum(kinship_matrix))
 
     # ===============================Algorithm==================================
     # ====================Here is vanilla Genetic Algorithm=====================
