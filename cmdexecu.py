@@ -43,13 +43,13 @@ class IBCalculator(object):
         if key[2:] == "analyse":
             self.file_to_analyze = value
             self.analyze()
+        elif key[2:] == "select":
+            run_main(gene_idx=value)
         elif key[2:] == "eval":
             if self.kinship is None:
                 raise Exception("please analyse file first.")
             self.file_to_evaluate = value
             self.evaluate_solution()
-        elif key[2:] == "select":
-            run_main(gene_idx=value)
         elif key[2:] == "p":
             self.calc_inbrcoef(ct=value)
         elif key[2:] == "p1":

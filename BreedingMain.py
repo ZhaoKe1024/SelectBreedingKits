@@ -82,6 +82,7 @@ def run_main(gene_idx="20"):
     fout.write(get_familyid(year, mi, fi) + "," + popus[pre_pos].name + "," + popus[
         male_num + cur_female].name + "," + f"{kinship_matrix[pre_pos, cur_female]:.5f}" + '\n')
     fi += 1
+    threshold = 0.2
     while idx < len(best_solution):
         cur_male = best_solution.vector_male[idx]
         cur_male_name = popus[cur_male].name
@@ -94,16 +95,19 @@ def run_main(gene_idx="20"):
         # fout.write(get_familyid(year, mi,
         #                         fi) + "," + cur_male_name + "," + cur_female_name + "," + f"{kinship_matrix[cur_male, cur_female]:.5f}" + '\n')
         # =======
-        fout.write(get_familyid(year, mi,
-                                fi) + "," + cur_male_name + "," + cur_female_name + "," + f"{kinship_matrix[cur_male, cur_female]:.5f}" + '\n')
-        print(get_familyid(year, mi,
-                           fi) + "," + cur_male_name + "," + cur_female_name + "," + f"{kinship_matrix[cur_male, cur_female]:.5f}")
+        ibc = kinship_matrix[cur_male, cur_female]
+        if ibc < threshold:
+            fout.write(get_familyid(year, mi,
+                                    fi) + "," + cur_male_name + "," + cur_female_name + "," + f"{ibc:.5f}" + '\n')
+            print(get_familyid(year, mi,
+                               fi) + "," + cur_male_name + "," + cur_female_name + "," + f"{ibc:.5f}")
         # >>>>>>> Stashed changes
         pre_pos = cur_male
         idx += 1
     print("]")
     fout.write('\n')
     fout.close()
+    print(f"generate finished gene {gene_idx}")
 
 
 if __name__ == '__main__':
