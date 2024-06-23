@@ -110,6 +110,45 @@ def run_main(gene_idx="20"):
     print(f"generate finished gene {gene_idx}")
 
 
+def run_n_generations(input_start, input_end, last_n):
+    """
+
+    :param input_start: read from sheet input_start
+    :param input_end: read end at sheet input_end
+    :param last_n: inbreeding last n year
+    :return:
+    """
+    layergraph, vertex_layer, vertex_list = get_graph_from_data(file_path="./历代配种方案及出雏对照2021_带性别.xlsx")
+    year2idx = {"16": 0, "17": 1, "18": 2, "19": 3, "20": 4, "21": 5}
+    print("Load edges from", input_end)
+    popus = []
+    print("year idx", year2idx[input_end])
+    # return
+
+    # print(vertex_layer)
+    for idx, item in enumerate(vertex_layer[year2idx[input_end]]):
+        popus.append(vertex_list[item])
+        # popus.append(Poultry(fi=f_i, wi=wi, fa_i=fa_i, ma_i=ma_i, sex=0, inbreedc=0.))
+
+    kinship = Kinship(graph=layergraph)
+    random.shuffle(popus)
+    male_rate = 1. / 11.
+    male_num = math.ceil(male_rate * len(popus))
+    female_num = len(popus) - male_num
+    for i in range(male_num):
+        vertex_list[i].gender = 1
+        popus[i].sex = 1
+    name2idx = dict()
+    for i, p in enumerate(popus):
+        name2idx[p.name] = i
+    # -------------Kinship read and build-------------
+
+    kinship_matrix = np.zeros((male_num, female_num))
+    for i in range(male_num):
+        for j in range(female_num):
+            kinship_matrix[i][j] = kinship.calc_kinship_corr(p1=popus[i].name, p2=popus[male_num + j].name)
+
+
 if __name__ == '__main__':
     # for i in [17, 18, 19, 20]:
     #     run_main(gene_idx=str(i))

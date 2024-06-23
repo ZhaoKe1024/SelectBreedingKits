@@ -20,18 +20,24 @@ class IBCalculator(object):
         self.file_to_analyze = None
         self.file_to_evaluate = None
         self.kinship = None
-        self.keys = ["analyse", "select", "eval", "p", "p1", "curr_analyse", "current_eval"]
+        self.keys = ["analyse", "select", "eval", "p", "p1", "help"]
+        self.describe = ["分析文件并构建族谱", "生成新一年的配种方案", "评估现有方案", "计算个体近交系数", "计算亲缘相关系数", "查看帮助"]
 
     def execute_all(self, kv_list):
         ind = 1
-        while ind < len(kv_list)-1:
+        while ind <= len(kv_list)-1:
             if kv_list[ind] == "--p1":
                 assert ind+3 < len(kv_list), f"expect 4 args but get {len(kv_list)-ind}"
                 self.execute(key=kv_list[ind], value=kv_list[ind+1], key2=kv_list[ind+2], value2=kv_list[ind+3])
                 ind += 4
             else:
-                self.execute(key=kv_list[ind], value=kv_list[ind+1])
-                ind += 2
+                if ind+1 == len(kv_list):
+                    self.execute(key=kv_list[ind], value=None)
+                    ind += 1
+                else:
+
+                    self.execute(key=kv_list[ind], value=kv_list[ind+1])
+                    ind += 2
 
     def execute(self, key, value, key2=None, value2=None):
 
@@ -40,7 +46,10 @@ class IBCalculator(object):
             raise Exception("Unknown key.")
         print(key, "-", "value")
 
-        if key[2:] == "analyse":
+        if key[2:] == "help":
+            for j, item in enumerate(self.keys):
+                print(item, '\t', self.describe[j])
+        elif key[2:] == "analyse":
             self.file_to_analyze = value
             self.analyze()
         elif key[2:] == "select":
