@@ -9,6 +9,7 @@ from func import NullNameException
 from graphfromtable import get_graph_from_data
 from procedure.kinship_on_graph import Kinship
 from procedure.xlsxreader import get_df_from_xlsx
+from BreedingMain import run_main
 
 
 class Main(QWidget, Ui_Dialog):
@@ -25,6 +26,7 @@ class Main(QWidget, Ui_Dialog):
         self.CalcButton1.clicked.connect(self.calc_corrcoef)
         self.CalcButton2.clicked.connect(self.calc_inbrcoef)
         self.EvalButton.clicked.connect(self.evaluate_solution)
+        self.GeneButton.clicked.connect(self.generate_solution)
 
     def show_text_func(self):
         try:
@@ -154,6 +156,19 @@ class Main(QWidget, Ui_Dialog):
                     fout.write(f"{row[1]},{row[2]},{row[3]}," + str(
                         self.kinship.calc_kinship_corr(p1=str(row[2]), p2=str(row[3]))) + '\n')
             self.textBrowser_4.append(f"表格sheet{sheet_name} 评估完成！")
+
+    def generate_solution(self):
+        # self.check_kinship()
+        ct = self.InputBox_geneidx.text().strip()
+        try:
+            run_main(gene_idx=ct)
+            self.textBrowser_4.setText(f"generate finished gene {ct}")
+        except NullNameException as e:
+            QMessageBox.critical(self, "错误", e.__str__(),  # 窗口提示信息
+                                 QMessageBox.Cancel | QMessageBox.Close,
+                                 # 窗口内添加按钮-QMessageBox.StandardButton，可重复添加使用 | 隔开；如果不写，会有个默认的QMessageBox.StandardButton
+                                 QMessageBox.Cancel,  # 设置默认按钮（前提是已经设置有的按钮，若是没有设置，则无效）
+                                 )
 
 
 if __name__ == '__main__':

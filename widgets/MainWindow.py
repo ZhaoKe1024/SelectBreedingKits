@@ -53,7 +53,7 @@ class Ui_Dialog(object):
 
         # 配对方案检查器
         self.Label3 = QtWidgets.QLabel(Dialog)
-        self.Label3.setGeometry(QtCore.QRect(left_margin2, 5, 180, 81))
+        self.Label3.setGeometry(QtCore.QRect(left_margin2, 5, 260, 81))
         font = QtGui.QFont()
         font.setFamily("Adobe Devanagari")
         font.setPointSize(12)
@@ -80,6 +80,16 @@ class Ui_Dialog(object):
         self.EvalButton = QtWidgets.QPushButton(Dialog)
         self.EvalButton.setGeometry(QtCore.QRect(left_margin2, 110, 75, 23))
         self.EvalButton.setObjectName("PushButton2")
+
+        self.InputBox_geneidx = QtWidgets.QLineEdit(Dialog)
+        self.InputBox_geneidx.setGeometry(QtCore.QRect(left_margin2+265, 110, 65, 26))
+        self.InputBox_geneidx.setObjectName("InputBix_geneidx")
+
+        # 生成方案
+        self.GeneButton = QtWidgets.QPushButton(Dialog)
+        self.GeneButton.setGeometry(QtCore.QRect(left_margin2+180, 110, 75, 23))
+        self.GeneButton.setObjectName("PushButton2")
+
         # 评估文件的结果
         self.textBrowser_4 = QtWidgets.QTextBrowser(Dialog)
         self.textBrowser_4.setGeometry(QtCore.QRect(left_margin2, 150, 381, 70))
@@ -160,13 +170,14 @@ class Ui_Dialog(object):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
         self.Label1.setText(_translate("Dialog", "遗传族谱分析器"))
-        self.Label3.setText(_translate("Dialog", "配对方案评估器"))
+        self.Label3.setText(_translate("Dialog", "配对方案评估器/生成器"))
         self.PushButton1.setText(_translate("Dialog", "选中文件"))
         self.OpenButton2.setText(_translate("Dialog", "选中文件"))
         self.Label2.setText(_translate("Dialog", "./配种方案及出雏对照.xlsx"))
         self.ExampleLabel2.setText(_translate("Dialog", "./配种方案及出雏对照.xlsx"))
         self.PushButton2.setText(_translate("Dialog", "分析文件"))
         self.EvalButton.setText(_translate("Dialog", "评估文件"))
+        self.GeneButton.setText(_translate("Dialog", "生成方案"))
         self.Label4.setText(_translate("Dialog", "亲缘相关系数计算"))
         self.Label5.setText(_translate("Dialog", "个体近交系数计算"))
         self.CalcButton1.setText(_translate("Dialog", "计算"))

@@ -147,11 +147,22 @@ class Stack(object):
 
 
 def calculate_fitness(so: MateSolution, kinship: List[List]) -> float:
+    """
+    objective function
+    :param so:
+    :param kinship:
+    :return: 方案里的平均亲缘相关系数
+    """
     res = 0.0
     L = len(so)
     for i in range(L):
         res += kinship[so.vector_male[i]][so.vector_female[i]]
     return res / L
+
+
+# new objective function
+# 近交增量最小化
+# 指定性别计算最佳雌雄比
 
 
 def calculate_inbreed_coef(fa, ma):

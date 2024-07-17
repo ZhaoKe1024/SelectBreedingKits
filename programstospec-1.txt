@@ -1,0 +1,17 @@
+#!/user/zhao/miniconda3/envs/torch-0
+# -*- coding: utf_8 -*-
+# @Time : 2024/5/25 8:45
+# @Author: ZhaoKe
+# @File : programstospec.py
+# @Software: PyCharm
+a = Analysis(
+    ['desktopui.py',
+    'func.py',
+    'graphfromtable.py',
+    'D:/kingz/pythonFiles/SelectBreeding/analyzer/commonAncestors.py',
+    'D:/kingz/pythonFiles/SelectBreeding/analyzer/data_example.py',
+    'D:/kingz/pythonFiles/SelectBreeding/analyzer/LayerGraph.py',
+    'D:/kingz/pythonFiles/SelectBreeding/procedure/kinship_on_graph.py',
+    'D:/kingz/pythonFiles/SelectBreeding/procedure/xlsx2graph.py',
+    'D:/kingz/pythonFiles/SelectBreeding/procedure/xlsxreader.py',
+    'D:/kingz/pythonFiles/SelectBreeding/widgets/MainWindow.py',],

@@ -150,7 +150,7 @@ def run_n_generations(input_start, input_end, last_n):
 
 
 if __name__ == '__main__':
-    # for i in [17, 18, 19, 20]:
-    #     run_main(gene_idx=str(i))
+    for i in [17, 18, 19, 20]:
+        run_main(gene_idx=str(i))
     run_main(gene_idx="21")
     # print(np.random.randn(2, 10))
