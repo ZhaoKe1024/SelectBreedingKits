@@ -161,6 +161,8 @@ class Main(QWidget, Ui_Dialog):
         # self.check_kinship()
         ct = self.InputBox_geneidx.text().strip()
         try:
+            if int(ct) > 21:
+                raise Exception("Unknown years num.")
             run_main(gene_idx=ct)
             self.textBrowser_4.setText(f"generate finished gene {ct}")
         except NullNameException as e:

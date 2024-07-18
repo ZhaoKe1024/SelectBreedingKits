@@ -53,6 +53,8 @@ class IBCalculator(object):
             self.file_to_analyze = value
             self.analyze()
         elif key[2:] == "select":
+            if int(value) > 21:
+                raise Exception("Unknown years num.")
             run_main(gene_idx=value)
         elif key[2:] == "eval":
             if self.kinship is None:
