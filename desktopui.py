@@ -3,14 +3,14 @@
 # @Time : 2024-05-23 23:03
 import logging
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QFileDialog, QMessageBox
+from PyQt5.QtWidgets import QApplication, QWidget, QFileDialog, QMessageBox, QMainWindow
 from widgets.MainWindow import Ui_Dialog
 from func import NullNameException
 from graphfromtable import get_graph_from_data
 from procedure.kinship_on_graph import Kinship
 from procedure.xlsxreader import get_df_from_xlsx
 from BreedingMain import run_main
-
+from widgets_tab.LoginWindow import Ui_MainWindow
 
 class Main(QWidget, Ui_Dialog):
     def __init__(self):
@@ -173,8 +173,14 @@ class Main(QWidget, Ui_Dialog):
                                  )
 
 
+class MainWindow(QMainWindow, Ui_MainWindow):
+    def __init__(self):
+        super(MainWindow, self).__init__()
+        self.setupUi(self)  # 1
+
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    demo = Main()
+    demo = MainWindow()
     demo.show()
     sys.exit(app.exec_())
