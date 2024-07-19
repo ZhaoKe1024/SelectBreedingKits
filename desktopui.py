@@ -39,23 +39,24 @@ class MainRunningWindow(QMainWindow, Ui_MainWindow):
         self.pushButton_18.clicked.connect(self.analyze)
         self.pushButton_19.clicked.connect(self.download_template)
         # Page1
+        self.pushButton_14.clicked.connect(self.open_file2)
+        self.file_to_evaluate = None
         self.pushButton_15.clicked.connect(self.download_template)
+        self.file_evaluated = None
+        # 要不要
         self.pushButton_16.clicked.connect(self.evaluate_solution)
         # Page2
-        # self.
+        self.calcButton1.clicked.connect(self.calc_corrcoef)
         # Page3
-
+        self.calcButton2.clicked.connect(self.calc_inbrcoef)
         # Page4
+        self.selectButton.clicked.connect(self.generate_solution)
 
         # Page5
 
-        # self.OpenButton2.clicked.connect(self.open_file2)
         # self.PushButton2.clicked.connect(self.show_text_func)
-        self.file_to_evaluate = None
-        # self.CalcButton1.clicked.connect(self.calc_corrcoef)
-        # self.CalcButton2.clicked.connect(self.calc_inbrcoef)
-        # self.EvalButton.clicked.connect(self.evaluate_solution)
-        # self.GeneButton.clicked.connect(self.generate_solution)
+        self.file_generated = None
+        self.pushButton.clicked.connect(self.open_localfile)
 
     def switch_stack(self):
         try:
@@ -73,17 +74,19 @@ class MainRunningWindow(QMainWindow, Ui_MainWindow):
         except Exception as e:
             print("有bug")
             logging.exception(e)
+
     def download_template(self):
         pass
+
     def open_file1(self, ):
         """打开文件"""
         file_path, _ = QFileDialog.getOpenFileName(self, "选择文件", "", "All Files (*)")
         if file_path:
             print(file_path)
             self.file_to_analyze = file_path
-            self.Label2.setText(".../" + file_path[-32:])
+            self.label_9.setText(".../" + file_path.split('/')[-1])
         else:
-            self.Label2.setText("请选择有效的xlsx文件!")
+            self.label_9.setText("请选择有效的xlsx文件!")
 
     def open_file2(self, ):
         """打开文件"""
@@ -91,12 +94,13 @@ class MainRunningWindow(QMainWindow, Ui_MainWindow):
         if file_path:
             print(file_path)
             self.file_to_evaluate = file_path
-            self.ExampleLabel2.setText(".../" + file_path[-32:])
+            self.label_4.setText(".../" + file_path.split('/')[-1])
         else:
-            self.ExampleLabel2.setText("请选择有效的xlsx文件!")
+            self.label_4.setText("请选择有效的xlsx文件!")
 
     def analyze(self):
         if self.file_to_analyze.split(".")[-1] not in ["xlsx", "xls"]:
+            print("format Error!")
             QMessageBox.critical(self, "错误", "暂时仅支持Excel文件!",  # 窗口提示信息
                                  QMessageBox.Cancel | QMessageBox.Close,
                                  # 窗口内添加按钮-QMessageBox.StandardButton，可重复添加使用 | 隔开；如果不写，会有个默认的QMessageBox.StandardButton
@@ -105,8 +109,11 @@ class MainRunningWindow(QMainWindow, Ui_MainWindow):
             return
         # self.show_text_func()
         # self.kinship = Kinship(file_path=self.file_to_analyze, graph=None)
+        print("Analyse file:", self.file_to_analyze)
         layergraph, vertex_layer, vertex_list = get_graph_from_data(file_path=self.file_to_analyze)
+        print("Read File Success.")
         self.kinship = Kinship(graph=layergraph)
+        print("Built Kinship Matrix!")
 
     def check_kinship(self):
         res_message = None
@@ -124,7 +131,7 @@ class MainRunningWindow(QMainWindow, Ui_MainWindow):
     def calc_corrcoef(self):
         """计算亲缘相关系数"""
         self.check_kinship()
-        ct = self.InputBox1.text().strip()
+        ct = self.input_3.text().strip()
         print(ct)
         if '.' in ct or ct == '':
             QMessageBox.critical(self, "错误", "请输入两个自然数编号（可以用逗号或空格隔开）",  # 窗口提示信息
@@ -150,7 +157,7 @@ class MainRunningWindow(QMainWindow, Ui_MainWindow):
         try:
             res = self.kinship.calc_kinship_corr(p1=p1, p2=p2)
             print(res)
-            self.textBrowser_2.setText(self.kinship.analyzer.get_just_message())
+            self.textBrowser_3.setText(self.kinship.analyzer.get_just_message())
         except NullNameException as e:
             QMessageBox.critical(self, "错误", e.__str__(),  # 窗口提示信息
                                  QMessageBox.Cancel | QMessageBox.Close,
@@ -161,7 +168,7 @@ class MainRunningWindow(QMainWindow, Ui_MainWindow):
     def calc_inbrcoef(self):
         """计算近交系数"""
         self.check_kinship()
-        ct = self.InputBox2.text().strip()
+        ct = self.input_44.text().strip()
         if '.' in ct or ct == '':
             QMessageBox.critical(self, "错误", "请输入1个自然数编号",  # 窗口提示信息
                                  QMessageBox.Cancel | QMessageBox.Close,
@@ -172,13 +179,13 @@ class MainRunningWindow(QMainWindow, Ui_MainWindow):
         try:
             res = self.kinship.calc_inbreed_coef(p=p)
             print(res)
-            self.textBrowser_3.setText(self.kinship.analyzer.get_just_message())
+            self.textBrowser.setText(self.kinship.analyzer.get_just_message())
         except NullNameException as e:
             QMessageBox.critical(self, "错误", e.__str__(),  # 窗口提示信息
                                  QMessageBox.Cancel | QMessageBox.Close,
                                  # 窗口内添加按钮-QMessageBox.StandardButton，可重复添加使用 | 隔开；如果不写，会有个默认的QMessageBox.StandardButton
                                  QMessageBox.Cancel,  # 设置默认按钮（前提是已经设置有的按钮，若是没有设置，则无效）
-                                 )
+            )
 
     def evaluate_solution(self):
         self.check_kinship()
@@ -192,7 +199,7 @@ class MainRunningWindow(QMainWindow, Ui_MainWindow):
                     # print(row[2], row[3])
                     fout.write(f"{row[1]},{row[2]},{row[3]}," + str(
                         self.kinship.calc_kinship_corr(p1=str(row[2]), p2=str(row[3]))) + '\n')
-            self.textBrowser_4.append(f"表格sheet{sheet_name} 评估完成！")
+            # self.textBrowser_2.append(f"表格sheet{sheet_name} 评估完成！")
 
     def generate_solution(self):
         # self.check_kinship()
@@ -201,13 +208,17 @@ class MainRunningWindow(QMainWindow, Ui_MainWindow):
             if int(ct) > 21:
                 raise Exception("Unknown years num.")
             run_main(gene_idx=ct)
-            self.textBrowser_4.setText(f"generate finished gene {ct}")
+            self.textBrowser_2.setText(f"generate finished gene {ct}")
         except NullNameException as e:
             QMessageBox.critical(self, "错误", e.__str__(),  # 窗口提示信息
                                  QMessageBox.Cancel | QMessageBox.Close,
                                  # 窗口内添加按钮-QMessageBox.StandardButton，可重复添加使用 | 隔开；如果不写，会有个默认的QMessageBox.StandardButton
                                  QMessageBox.Cancel,  # 设置默认按钮（前提是已经设置有的按钮，若是没有设置，则无效）
                                  )
+
+    def open_localfile(self):
+        os.system("./{}".format(self.file_generated))
+
 
 
 class LoginWindow(QMainWindow, Ui_LoginWindow):
@@ -255,10 +266,6 @@ class RegisterNewUserWindow(QMainWindow, Ui_RegisterWindow):
                                  QMessageBox.Cancel,  # 设置默认按钮（前提是已经设置有的按钮，若是没有设置，则无效）
                                  )
 
-    # def close(self):
-    #     if self.can_close:
-    #         self.close()
-
 
 class MainControl(object):
     def __init__(self):
@@ -266,7 +273,6 @@ class MainControl(object):
         self.login_window = LoginWindow()
         self.login_window.loginButton.clicked.connect(self.login)
         self.main_window = None
-
 
     def run(self):
         self.login_window.show()

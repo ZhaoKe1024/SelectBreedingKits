@@ -106,6 +106,7 @@ class Ui_MainWindow(object):
         self.pushButton_19.setGeometry(QtCore.QRect(410, 10, 150, 40))
         self.pushButton_19.setObjectName("pushButton_19")
         self.stackedWidget.addWidget(self.page_0)
+
         # =====---1 历史方案分析---==========
         self.page_1 = QtWidgets.QWidget()
         self.page_1.setObjectName("page_1")
@@ -188,42 +189,47 @@ class Ui_MainWindow(object):
         self.page_4 = QtWidgets.QWidget()
         self.page_4.setObjectName("page_4")
 
-        self.label_7 = QtWidgets.QLabel(self.page_4)  # 导入历史配种方案
-        self.label_7.setGeometry(QtCore.QRect(10, 5, 171, 41))
-        self.label_7.setObjectName("label_7")
         self.label_2 = QtWidgets.QLabel(self.page_4)
         self.label_2.setGeometry(QtCore.QRect(40, 45, 261, 31))
         self.label_2.setObjectName("label_2")
 
-        self.input_8 = QtWidgets.QLineEdit(self.page_4)
-        self.input_8.setGeometry(QtCore.QRect(190, 85, 141, 41))
-        self.input_8.setObjectName("input_8")
         self.label_12 = QtWidgets.QLabel(self.page_4)
-        self.label_12.setGeometry(QtCore.QRect(40, 95, 71, 21))
+        self.label_12.setGeometry(QtCore.QRect(40, 95, 95, 21))
         self.label_12.setObjectName("label_12")
+        self.input_8 = QtWidgets.QLineEdit(self.page_4)
+        self.input_8.setGeometry(QtCore.QRect(210, 85, 141, 36))
+        self.input_8.setObjectName("input_8")
 
         self.label_13 = QtWidgets.QLabel(self.page_4)
-        self.label_13.setGeometry(QtCore.QRect(40, 135, 71, 21))
+        self.label_13.setGeometry(QtCore.QRect(40, 135, 95, 21))
         self.label_13.setObjectName("label_13")
         self.input_14 = QtWidgets.QLineEdit(self.page_4)
-        self.input_14.setGeometry(QtCore.QRect(190, 125, 141, 41))
+        self.input_14.setGeometry(QtCore.QRect(210, 125, 141, 36))
         self.input_14.setObjectName("input_14")
 
         self.label_15 = QtWidgets.QLabel(self.page_4)
-        self.label_15.setGeometry(QtCore.QRect(40, 175, 121, 21))
+        self.label_15.setGeometry(QtCore.QRect(40, 175, 141, 21))
         self.label_15.setObjectName("label_15")  # 输入家系个数
         self.input_16 = QtWidgets.QLineEdit(self.page_4)
-        self.input_16.setGeometry(QtCore.QRect(190, 165, 141, 41))
+        self.input_16.setGeometry(QtCore.QRect(210, 165, 141, 36))
         self.input_16.setObjectName("input_16")
 
         self.textBrowser_2 = QtWidgets.QTextBrowser(self.page_4)
         self.textBrowser_2.setGeometry(QtCore.QRect(20, 210, 351, 221))
         self.textBrowser_2.setObjectName("textBrowser_2")
 
+        self.selectButton = QtWidgets.QPushButton(self.page_4)
+        self.selectButton.setGeometry(QtCore.QRect(190, 45, 110, 31))
+        self.selectButton.setObjectName("selectButton")
+
         self.pushButton = QtWidgets.QPushButton(self.page_4)
         self.pushButton.setGeometry(QtCore.QRect(20, 440, 141, 31))
         self.pushButton.setObjectName("pushButton")
         self.stackedWidget.addWidget(self.page_4)
+
+        self.label_7 = QtWidgets.QLabel(self.page_4)  # 导入历史配种方案
+        self.label_7.setGeometry(QtCore.QRect(170, 440, 171, 41))
+        self.label_7.setObjectName("label_7")
 
         # ====-----设置页----========
         self.page_settings = QtWidgets.QWidget()
@@ -277,15 +283,16 @@ class Ui_MainWindow(object):
         # self.input_44.setText(_translate("MainWindow", "输入框"))
         self.calcButton2.setText(_translate("MainWindow", "计算"))
 
-        self.label_7.setText(_translate("MainWindow", "导入历史配种方案"))
         self.label_2.setText(_translate("MainWindow", "文件名"))
-        self.label_12.setText(_translate("MainWindow", "请输入年份"))
-        self.input_8.setText(_translate("MainWindow", "输入框"))
-        self.label_13.setText(_translate("MainWindow", "请输入雄雌比"))
-        self.input_14.setText(_translate("MainWindow", "请输入雄雌比"))
-        self.label_15.setText(_translate("MainWindow", "请输入所需家系个数"))
-        self.input_16.setText(_translate("MainWindow", "请输入所需家系个数"))
+        self.label_12.setText(_translate("MainWindow", "请输入年份："))
+        self.input_8.setText(_translate("MainWindow", ""))
+        self.label_13.setText(_translate("MainWindow", "请输入雄雌比："))
+        self.input_14.setText(_translate("MainWindow", ""))
+        self.label_15.setText(_translate("MainWindow", "请输入所需家系个数："))
+        self.input_16.setText(_translate("MainWindow", ""))
+        self.selectButton.setText(_translate("MainWindow", "生成方案"))
         self.pushButton.setText(_translate("MainWindow", "打开生成的方案"))
+        self.label_7.setText(_translate("MainWindow", "filename.xlsx"))
 
         self.pushButton_1.setText(_translate("MainWindow", "文件分析"))
         self.pushButton_2.setText(_translate("MainWindow", "谱系分析"))
