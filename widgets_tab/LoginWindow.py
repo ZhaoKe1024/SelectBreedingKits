@@ -11,34 +11,41 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_MainWindow(object):
+class Ui_LoginWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(390, 202)
+        MainWindow.resize(390, 220)
+        top_margin = 50
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
+
         self.label_username = QtWidgets.QLabel(self.centralwidget)
-        self.label_username.setGeometry(QtCore.QRect(90, 20, 54, 12))
+        self.label_username.setGeometry(QtCore.QRect(90, top_margin, 54, 20))
         self.label_username.setObjectName("label_username")
         self.label_password = QtWidgets.QLabel(self.centralwidget)
-        self.label_password.setGeometry(QtCore.QRect(90, 70, 54, 12))
+        self.label_password.setGeometry(QtCore.QRect(90, top_margin+40, 54, 20))
         self.label_password.setObjectName("label_password")
+
         self.input_username = QtWidgets.QLineEdit(self.centralwidget)
-        self.input_username.setGeometry(QtCore.QRect(170, 20, 113, 20))
+        self.input_username.setGeometry(QtCore.QRect(170, top_margin, 113, 20))
         self.input_username.setObjectName("input_username")
         self.input_password = QtWidgets.QLineEdit(self.centralwidget)
-        self.input_password.setGeometry(QtCore.QRect(170, 60, 113, 20))
+        self.input_password.setGeometry(QtCore.QRect(170, top_margin+40, 113, 20))
         self.input_password.setObjectName("input_password")
-        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton.setGeometry(QtCore.QRect(90, 110, 75, 23))
-        self.pushButton.setObjectName("pushButton")
-        self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_2.setGeometry(QtCore.QRect(210, 110, 75, 23))
-        self.pushButton_2.setObjectName("pushButton_2")
+
+        self.loginButton = QtWidgets.QPushButton(self.centralwidget)
+        self.loginButton.setGeometry(QtCore.QRect(90, top_margin + 90, 75, 23))
+        self.loginButton.setObjectName("登录")
+
+        self.registerButton = QtWidgets.QPushButton(self.centralwidget)
+        self.registerButton.setGeometry(QtCore.QRect(210, top_margin + 90, 75, 23))
+        self.registerButton.setObjectName("注册")
+
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 390, 23))
         self.menubar.setObjectName("menubar")
+
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -52,5 +59,5 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.label_username.setText(_translate("MainWindow", "用户名"))
         self.label_password.setText(_translate("MainWindow", "密码"))
-        self.pushButton.setText(_translate("MainWindow", "登录"))
-        self.pushButton_2.setText(_translate("MainWindow", "注册"))
+        self.loginButton.setText(_translate("MainWindow", "登录"))
+        self.registerButton.setText(_translate("MainWindow", "注册"))

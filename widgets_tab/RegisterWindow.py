@@ -11,27 +11,33 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_MainWindow(object):
+class Ui_RegisterWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(427, 246)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
+
         self.input_username = QtWidgets.QLineEdit(self.centralwidget)
         self.input_username.setGeometry(QtCore.QRect(190, 40, 113, 20))
         self.input_username.setObjectName("input_username")
-        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton.setGeometry(QtCore.QRect(170, 130, 75, 23))
-        self.pushButton.setObjectName("pushButton")
+        # self.input_username.setPlaceholderText("")  # default value of inputbox
         self.input_password = QtWidgets.QLineEdit(self.centralwidget)
         self.input_password.setGeometry(QtCore.QRect(190, 80, 113, 20))
         self.input_password.setObjectName("input_password")
+        # self.input_password.setPlaceholderText("(可用空格或逗号隔开)")  # default value of inputbox
+
         self.label_username = QtWidgets.QLabel(self.centralwidget)
         self.label_username.setGeometry(QtCore.QRect(110, 40, 54, 12))
         self.label_username.setObjectName("label_username")
         self.label_password = QtWidgets.QLabel(self.centralwidget)
         self.label_password.setGeometry(QtCore.QRect(110, 90, 54, 12))
         self.label_password.setObjectName("label_password")
+
+        self.submitButton = QtWidgets.QPushButton(self.centralwidget)
+        self.submitButton.setGeometry(QtCore.QRect(170, 130, 75, 23))
+        self.submitButton.setObjectName("pushButton")
+
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 427, 23))
@@ -47,6 +53,6 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.pushButton.setText(_translate("MainWindow", "确定"))
+        self.submitButton.setText(_translate("MainWindow", "确定"))
         self.label_username.setText(_translate("MainWindow", "用户名"))
         self.label_password.setText(_translate("MainWindow", "密码"))

@@ -2,7 +2,9 @@
 # @Author : ZhaoKe
 # @Time : 2024-05-23 23:03
 import logging
+import os.path
 import sys
+import json
 from PyQt5.QtWidgets import QApplication, QWidget, QFileDialog, QMessageBox, QMainWindow
 from widgets.MainWindow import Ui_Dialog
 from func import NullNameException
@@ -10,7 +12,10 @@ from graphfromtable import get_graph_from_data
 from procedure.kinship_on_graph import Kinship
 from procedure.xlsxreader import get_df_from_xlsx
 from BreedingMain import run_main
-from widgets_tab.LoginWindow import Ui_MainWindow
+from widgets_tab.LoginWindow import Ui_LoginWindow
+from widgets_tab.RegisterWindow import Ui_RegisterWindow
+from widgets_tab.MainWindow import Ui_MainWindow
+
 
 class Main(QWidget, Ui_Dialog):
     def __init__(self):
@@ -173,14 +178,97 @@ class Main(QWidget, Ui_Dialog):
                                  )
 
 
-class MainWindow(QMainWindow, Ui_MainWindow):
+class MainRunningWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
-        super(MainWindow, self).__init__()
+        super(MainRunningWindow, self).__init__()
         self.setupUi(self)  # 1
 
 
+class LoginWindow(QMainWindow, Ui_LoginWindow):
+    def __init__(self):
+        super(LoginWindow, self).__init__()
+        self.setupUi(self)  # 1
+        self.registerButton.clicked.connect(self.open_register)
+
+    def open_register(self):
+        self.register_window = RegisterNewUserWindow()
+        self.register_window.show()
+
+
+class RegisterNewUserWindow(QMainWindow, Ui_RegisterWindow):
+    def __init__(self):
+        super(RegisterNewUserWindow, self).__init__()
+        self.setupUi(self)  # 1
+        self.submitButton.clicked.connect(self.save_new_config)
+        # self.can_close = False
+
+    def save_new_config(self):
+        usr = self.input_username.text().strip()
+        if len(usr) < 4 or len(usr) > 16:
+            QMessageBox.question(self.login_window, 'Message', '用户名应不小于4位，不多于16位！', QMessageBox.Yes)
+        pwd = self.input_password.text().strip()
+        if len(pwd) < 4 or len(pwd) > 16:
+            QMessageBox.question(self.login_window, 'Message', '请输入6-16位之间的密码！！', QMessageBox.Yes)
+        new_data = {
+            "username": usr,
+            "password": pwd,
+        }
+        try:
+            new_json_string = json.dumps(new_data, ensure_ascii=False)  # 正常显示中文
+            if os.path.exists("./configs/"):
+                os.makedirs("./configs/", exist_ok=True)
+            with open("./configs/cfg_{}.json".format(usr), 'w', encoding='utf_8') as nf:
+                nf.write(new_json_string)
+            reply = QMessageBox.question(self, 'Message', '注册成功！', QMessageBox.Yes)
+            # self.can_close = True
+            self.close()
+        except Exception as e:
+            QMessageBox.critical(self, "错误", e.__str__(),  # 窗口提示信息
+                                 QMessageBox.Cancel | QMessageBox.Close,
+                                 # 窗口内添加按钮-QMessageBox.StandardButton，可重复添加使用 | 隔开；如果不写，会有个默认的QMessageBox.StandardButton
+                                 QMessageBox.Cancel,  # 设置默认按钮（前提是已经设置有的按钮，若是没有设置，则无效）
+                                 )
+
+    # def close(self):
+    #     if self.can_close:
+    #         self.close()
+
+
+class MainControl(object):
+    def __init__(self):
+        self.app = QApplication(sys.argv)
+        self.login_window = LoginWindow()
+        self.login_window.loginButton.clicked.connect(self.login)
+        self.main_window = None
+
+    def run(self):
+        self.login_window.show()
+
+        # demo = RegisterNewUserWindow()
+        # demo.show()
+        # self.main_window = MainRunningWindow()
+        # self.main_window.show()
+        sys.exit(self.app.exec_())
+
+    def login(self):
+        usr = self.login_window.input_username.text().strip()
+        if not os.path.exists("./configs/cfg_{}.json".format(usr)):
+            QMessageBox.question(self.login_window, 'Message', '用户名不存在！', QMessageBox.Yes)
+            return
+        pwd = self.login_window.input_password.text().strip()
+        json_str = None  # json string
+        with open("./configs/cfg_{}.json".format(usr), 'r', encoding='utf_8') as fp:
+            json_str = fp.read()
+        json_data = json.loads(json_str)  # get json from json string
+        print(json_data["username"], "******")
+        if pwd != json_data["password"]:
+            QMessageBox.question(self.login_window, 'Message', '密码不正确！', QMessageBox.Yes)
+            return
+        self.login_window.close()
+        self.main_window = MainRunningWindow()
+        self.main_window.show()
+
+
 if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    demo = MainWindow()
-    demo.show()
-    sys.exit(app.exec_())
+    mc = MainControl()
+    mc.run()
