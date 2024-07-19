@@ -17,21 +17,53 @@ from widgets_tab.RegisterWindow import Ui_RegisterWindow
 from widgets_tab.MainWindow import Ui_MainWindow
 
 
-class Main(QWidget, Ui_Dialog):
+class MainRunningWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
-        super(Main, self).__init__()
+        super(MainRunningWindow, self).__init__()
         self.setupUi(self)  # 1
+        self.listWidget.itemClicked.connect(self.switch_stack)
+        self.listWidget.setCurrentRow(0)
+        self.pushButton_1.clicked.connect(self.switch_stack)
+        self.pushButton_2.clicked.connect(self.switch_stack)
+        self.pushButton_3.clicked.connect(self.switch_stack)
+        self.pushButton_4.clicked.connect(self.switch_stack)
+        self.pushButton_5.clicked.connect(self.switch_stack)
+        self.pushButton_6.clicked.connect(self.switch_stack)
+        self.switch_stack()
+
         # self.text_edit.textChanged.connect(self.show_text_func)  # 2
-        self.PushButton1.clicked.connect(self.open_file1)
-        self.OpenButton2.clicked.connect(self.open_file2)
-        self.PushButton2.clicked.connect(self.show_text_func)
+        # Page0 分析
+        self.pushButton_17.clicked.connect(self.open_file1)
         self.file_to_analyze = None
-        self.file_to_evaluate = None
         self.kinship = None
-        self.CalcButton1.clicked.connect(self.calc_corrcoef)
-        self.CalcButton2.clicked.connect(self.calc_inbrcoef)
-        self.EvalButton.clicked.connect(self.evaluate_solution)
-        self.GeneButton.clicked.connect(self.generate_solution)
+        self.pushButton_18.clicked.connect(self.analyze)
+        self.pushButton_19.clicked.connect(self.download_template)
+        # Page1
+        self.pushButton_15.clicked.connect(self.download_template)
+        self.pushButton_16.clicked.connect(self.evaluate_solution)
+        # Page2
+        # self.
+        # Page3
+
+        # Page4
+
+        # Page5
+
+        # self.OpenButton2.clicked.connect(self.open_file2)
+        # self.PushButton2.clicked.connect(self.show_text_func)
+        self.file_to_evaluate = None
+        # self.CalcButton1.clicked.connect(self.calc_corrcoef)
+        # self.CalcButton2.clicked.connect(self.calc_inbrcoef)
+        # self.EvalButton.clicked.connect(self.evaluate_solution)
+        # self.GeneButton.clicked.connect(self.generate_solution)
+
+    def switch_stack(self):
+        try:
+            i = self.listWidget.currentIndex().row()
+            print(i)
+            self.stackedWidget.setCurrentIndex(i)
+        except:
+            pass
 
     def show_text_func(self):
         try:
@@ -41,7 +73,8 @@ class Main(QWidget, Ui_Dialog):
         except Exception as e:
             print("有bug")
             logging.exception(e)
-
+    def download_template(self):
+        pass
     def open_file1(self, ):
         """打开文件"""
         file_path, _ = QFileDialog.getOpenFileName(self, "选择文件", "", "All Files (*)")
@@ -73,7 +106,6 @@ class Main(QWidget, Ui_Dialog):
         # self.show_text_func()
         # self.kinship = Kinship(file_path=self.file_to_analyze, graph=None)
         layergraph, vertex_layer, vertex_list = get_graph_from_data(file_path=self.file_to_analyze)
-
         self.kinship = Kinship(graph=layergraph)
 
     def check_kinship(self):
@@ -178,12 +210,6 @@ class Main(QWidget, Ui_Dialog):
                                  )
 
 
-class MainRunningWindow(QMainWindow, Ui_MainWindow):
-    def __init__(self):
-        super(MainRunningWindow, self).__init__()
-        self.setupUi(self)  # 1
-
-
 class LoginWindow(QMainWindow, Ui_LoginWindow):
     def __init__(self):
         super(LoginWindow, self).__init__()
@@ -240,6 +266,7 @@ class MainControl(object):
         self.login_window = LoginWindow()
         self.login_window.loginButton.clicked.connect(self.login)
         self.main_window = None
+
 
     def run(self):
         self.login_window.show()
