@@ -50,6 +50,9 @@ class MainRunningWindow(QMainWindow, Ui_MainWindow):
         # Page3
         self.calcButton2.clicked.connect(self.calc_inbrcoef)
         # Page4
+        self.input_year = 21
+        self.input_fm_ratio = 10
+        self.input_number = None
         self.selectButton.clicked.connect(self.generate_solution)
 
         # Page5
@@ -203,12 +206,17 @@ class MainRunningWindow(QMainWindow, Ui_MainWindow):
 
     def generate_solution(self):
         # self.check_kinship()
-        ct = self.InputBox_geneidx.text().strip()
+        # ct = self.InputBox_geneidx.text().strip()
+        y = self.input_8.text().strip()
+        r = self.input_14.text().strip()
+        n = self.input_16.text().strip()
+        print(y, r, n)
         try:
-            if int(ct) > 21:
+            if int(y) > 21:
                 raise Exception("Unknown years num.")
-            run_main(gene_idx=ct)
-            self.textBrowser_2.setText(f"generate finished gene {ct}")
+            print(y, int(r))
+            run_main(gene_idx=y, fmr=int(r))
+            self.textBrowser_2.setText(f"generate finished gene {y}")
         except NullNameException as e:
             QMessageBox.critical(self, "错误", e.__str__(),  # 窗口提示信息
                                  QMessageBox.Cancel | QMessageBox.Close,
@@ -251,8 +259,9 @@ class RegisterNewUserWindow(QMainWindow, Ui_RegisterWindow):
             "password": pwd,
         }
         try:
+            print(new_data)
             new_json_string = json.dumps(new_data, ensure_ascii=False)  # 正常显示中文
-            if os.path.exists("./configs/"):
+            if not os.path.exists("./configs/"):
                 os.makedirs("./configs/", exist_ok=True)
             with open("./configs/cfg_{}.json".format(usr), 'w', encoding='utf_8') as nf:
                 nf.write(new_json_string)

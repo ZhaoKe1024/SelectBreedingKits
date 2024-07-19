@@ -13,7 +13,7 @@ from procedure.kinship_on_graph import Kinship
 from func import get_familyid
 
 
-def run_main(gene_idx="20"):
+def run_main(gene_idx="20", fmr=10):
     layergraph, vertex_layer, vertex_list = get_graph_from_data(file_path="./历代配种方案及出雏对照2021_带性别.xlsx")
     kinship = Kinship(graph=layergraph)
 
@@ -42,7 +42,7 @@ def run_main(gene_idx="20"):
     # kinship.print_all_poultry()
     # print(kinship.calc_kinship_corr(p1="14761", p2="14766"))
     random.shuffle(popus)
-    male_rate = 1. / 11.
+    male_rate = 1. / (1.+fmr)
     male_num = math.ceil(male_rate * len(popus))
     female_num = len(popus) - male_num
     for i in range(male_num):

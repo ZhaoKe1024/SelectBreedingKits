@@ -128,9 +128,15 @@ class Ui_MainWindow(object):
         self.label_18 = QtWidgets.QLabel(self.page_1)
         self.label_18.setGeometry(QtCore.QRect(30, 110, 200, 40))
         self.label_18.setObjectName("label_18")
-        self.label_19 = QtWidgets.QLabel(self.page_1)
-        self.label_19.setGeometry(QtCore.QRect(230, 110, 71, 41))
-        self.label_19.setObjectName("label_19")
+
+        self.input_19 = QtWidgets.QLineEdit(self.page_1)
+        self.input_19.setGeometry(QtCore.QRect(230, 110, 71, 41))
+        self.input_19.setObjectName("input_8")
+
+        self.textBrowser_eval = QtWidgets.QTextBrowser(self.page_1)
+        self.textBrowser_eval.setGeometry(QtCore.QRect(40, 250, 351, 221))
+        self.textBrowser_eval.setObjectName("textBrowser_3")
+
         self.stackedWidget.addWidget(self.page_1)
         # =====---2 亲缘相关系数计算---==========
         self.page_2 = QtWidgets.QWidget()
@@ -219,7 +225,7 @@ class Ui_MainWindow(object):
         self.textBrowser_2.setObjectName("textBrowser_2")
 
         self.selectButton = QtWidgets.QPushButton(self.page_4)
-        self.selectButton.setGeometry(QtCore.QRect(190, 45, 110, 31))
+        self.selectButton.setGeometry(QtCore.QRect(220, 45, 110, 31))
         self.selectButton.setObjectName("selectButton")
 
         self.pushButton = QtWidgets.QPushButton(self.page_4)
@@ -268,11 +274,11 @@ class Ui_MainWindow(object):
 
         self.pushButton_14.setText(_translate("MainWindow", "导入历史配种文件"))
         self.pushButton_15.setText(_translate("MainWindow", "模板下载"))
-        self.label_4.setText(_translate("MainWindow", "TextLabel"))
+        self.label_4.setText(_translate("MainWindow", "待上传文件"))
         self.label_18.setText(_translate("MainWindow", "输入评估年份(需在文件中包含)"))
         self.pushButton_16.setText(_translate("MainWindow", "评估方案"))
         self.label_17.setText(_translate("MainWindow", "生成评估文件："))
-        self.label_19.setText(_translate("MainWindow", "输入框"))
+        self.input_19.setText(_translate("MainWindow", ""))
 
         self.label_10.setText(_translate("MainWindow", "请输入两个个体的翅号(逗号或空格隔开)"))
         self.label_11.setText(_translate("MainWindow", "亲缘相关系数计算"))
@@ -286,10 +292,10 @@ class Ui_MainWindow(object):
         self.label_2.setText(_translate("MainWindow", "文件名"))
         self.label_12.setText(_translate("MainWindow", "请输入年份："))
         self.input_8.setText(_translate("MainWindow", ""))
-        self.label_13.setText(_translate("MainWindow", "请输入雄雌比："))
-        self.input_14.setText(_translate("MainWindow", ""))
+        self.label_13.setText(_translate("MainWindow", "请输入雌雄比："))
+        self.input_14.setText(_translate("MainWindow", "10"))
         self.label_15.setText(_translate("MainWindow", "请输入所需家系个数："))
-        self.input_16.setText(_translate("MainWindow", ""))
+        self.input_16.setText(_translate("MainWindow", "默认等于母禽个数"))
         self.selectButton.setText(_translate("MainWindow", "生成方案"))
         self.pushButton.setText(_translate("MainWindow", "打开生成的方案"))
         self.label_7.setText(_translate("MainWindow", "filename.xlsx"))
