@@ -105,6 +105,9 @@ class Ui_MainWindow(object):
         self.pushButton_19 = QtWidgets.QPushButton(self.page_0)
         self.pushButton_19.setGeometry(QtCore.QRect(410, 10, 150, 40))
         self.pushButton_19.setObjectName("pushButton_19")
+        self.label_loadfile = QtWidgets.QLabel(self.page_0)
+        self.label_loadfile.setGeometry(QtCore.QRect(10, 160, 261, 51))
+        self.label_loadfile.setObjectName("label_loadfile")
         self.stackedWidget.addWidget(self.page_0)
 
         # =====---1 历史方案分析---==========
@@ -271,6 +274,7 @@ class Ui_MainWindow(object):
         self.pushButton_17.setText(_translate("MainWindow", "导入配种对照文件"))
         self.pushButton_18.setText(_translate("MainWindow", "构建族谱图"))
         self.pushButton_19.setText(_translate("MainWindow", "模板下载"))
+        self.label_loadfile.setText(_translate("MainWindow", ""))
 
         self.pushButton_14.setText(_translate("MainWindow", "导入历史配种文件"))
         self.pushButton_15.setText(_translate("MainWindow", "模板下载"))

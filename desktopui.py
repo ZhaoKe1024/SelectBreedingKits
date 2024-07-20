@@ -117,6 +117,7 @@ class MainRunningWindow(QMainWindow, Ui_MainWindow):
         print("Read File Success.")
         self.kinship = Kinship(graph=layergraph)
         print("Built Kinship Matrix!")
+        self.label_loadfile.setText("成功构建族谱图")
 
     def check_kinship(self):
         res_message = None
@@ -188,10 +189,11 @@ class MainRunningWindow(QMainWindow, Ui_MainWindow):
                                  QMessageBox.Cancel | QMessageBox.Close,
                                  # 窗口内添加按钮-QMessageBox.StandardButton，可重复添加使用 | 隔开；如果不写，会有个默认的QMessageBox.StandardButton
                                  QMessageBox.Cancel,  # 设置默认按钮（前提是已经设置有的按钮，若是没有设置，则无效）
-            )
+                                 )
 
     def evaluate_solution(self):
         self.check_kinship()
+        y = self.input_19.text().strip()
         sheet_list = ["16", "17", "18", "19", "20"]
         for sheet_name in sheet_list[1:]:
             edges_df = get_df_from_xlsx(filepath=self.file_to_evaluate, sheet_name=sheet_name,
@@ -202,12 +204,14 @@ class MainRunningWindow(QMainWindow, Ui_MainWindow):
                     # print(row[2], row[3])
                     fout.write(f"{row[1]},{row[2]},{row[3]}," + str(
                         self.kinship.calc_kinship_corr(p1=str(row[2]), p2=str(row[3]))) + '\n')
-            # self.textBrowser_2.append(f"表格sheet{sheet_name} 评估完成！")
+            self.textBrowser_eval.append(f"表格sheet{sheet_name} 评估完成！")
+            if sheet_name == y:
+                break
 
     def generate_solution(self):
         # self.check_kinship()
         # ct = self.InputBox_geneidx.text().strip()
-        y = self.input_8.text().strip()
+        y = self.input_8.text().strip()[-2:]
         r = self.input_14.text().strip()
         n = self.input_16.text().strip()
         print(y, r, n)
@@ -217,6 +221,7 @@ class MainRunningWindow(QMainWindow, Ui_MainWindow):
             print(y, int(r))
             run_main(gene_idx=y, fmr=int(r))
             self.textBrowser_2.setText(f"generate finished gene {y}")
+            self.file_generated = f"generate finished gene: result_name_rand_{y}.xlsx"
         except NullNameException as e:
             QMessageBox.critical(self, "错误", e.__str__(),  # 窗口提示信息
                                  QMessageBox.Cancel | QMessageBox.Close,
@@ -226,7 +231,6 @@ class MainRunningWindow(QMainWindow, Ui_MainWindow):
 
     def open_localfile(self):
         os.system("./{}".format(self.file_generated))
-
 
 
 class LoginWindow(QMainWindow, Ui_LoginWindow):
@@ -250,10 +254,12 @@ class RegisterNewUserWindow(QMainWindow, Ui_RegisterWindow):
     def save_new_config(self):
         usr = self.input_username.text().strip()
         if len(usr) < 4 or len(usr) > 16:
-            QMessageBox.question(self.login_window, 'Message', '用户名应不小于4位，不多于16位！', QMessageBox.Yes)
+            QMessageBox.question(self, 'Message', '用户名应不小于4位，不多于16位！', QMessageBox.Yes)
+            return
         pwd = self.input_password.text().strip()
         if len(pwd) < 4 or len(pwd) > 16:
-            QMessageBox.question(self.login_window, 'Message', '请输入6-16位之间的密码！！', QMessageBox.Yes)
+            QMessageBox.question(self, 'Message', '请输入6-16位之间的密码！！', QMessageBox.Yes)
+            return
         new_data = {
             "username": usr,
             "password": pwd,
