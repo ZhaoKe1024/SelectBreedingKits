@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
 # @Author : ZhaoKe
 # @Time : 2024-04-06 23:41
-from analyzer.LayerGraph import Vertex, LayerNetworkGraph
+import random
+
+import pandas as pd
+
+from inbreed_lib.analyzer.LayerGraph import Vertex, LayerNetworkGraph
 
 
 def get_instant_1():
@@ -45,3 +49,41 @@ def get_instant_1():
     children_list[26] = []
     layergraph = LayerNetworkGraph(vertex_list=vertex_list, vertex_layer=vertex_layer, children=children_list)
     return layergraph
+
+
+# ===========================生成一个30×300的种群========================
+def generator_330():
+    male_idxs = ["G{}M{}".format(i, i) for i in range(30)]
+    female_idxs = []
+    for i in range(len(male_idxs)):
+        for j in range(10):
+            female_idxs.append("G{}F{}".format(i, j))
+    print(male_idxs)
+    print(female_idxs)
+    fout = open("./kinship330.csv", 'w')
+    fout.write("," + ','.join(female_idxs) + '\n')
+    # print((","+','.join(female_idxs)+'\n'))
+    for i in range(len(male_idxs)):
+        ps = []
+        st = i * 10
+        en = (i + 1) * 10
+        for j in range(0, st):
+            ps.append(0.49 + 0.4 * random.random())
+        for j in range(st, en):
+            ps.append(0.11 * random.random())
+        for j in range(en, len(female_idxs)):
+            ps.append(0.49 + 0.4 * random.random())
+        fout.write(male_idxs[i] + ',' + ','.join([str(item) for item in ps]) + '\n')
+        # print(male_idxs[i]+','+','.join([str(item)[:4] for item in ps])+'\n')
+    fout.close()
+
+
+def test_read_for_file():
+    df = pd.read_csv("./kinship330.csv", delimiter=',', header=0, index_col=None)
+    print(df.head(10))
+    print(df.shape)
+
+
+if __name__ == '__main__':
+    # generator_330()
+    test_read_for_file()
