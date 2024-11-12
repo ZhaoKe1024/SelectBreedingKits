@@ -8,7 +8,7 @@ from typing import List
 import pandas as pd
 import random
 from pandas import DataFrame
-from selector.entities import Poultry
+from inbreed_lib.selector.entities import Poultry
 
 
 def csv_read_test(filepath="./test_xlsx_data.csv"):
@@ -26,25 +26,29 @@ def read_xlsx(filepath="./历代配种方案及出雏对照2021.xlsx"):
             print(parent_df.shape, parent_df.dropna(axis=0).shape)  # drop rows contain NaN value
 
 
-def get_df_from_xlsx(filepath="./历代配种方案及出雏对照2021.xlsx", sheet_name=None, cols: List = None)->DataFrame:
+def get_df_from_xlsx(filepath="../../temp_files/历代配种方案及出雏对照2021_带性别.xlsx", sheet_name=None,
+                     cols: List = None) -> DataFrame:
     ext = filepath.split('.')[-1]
-    if ext[:-1] == "xls":
+    if ext[:-1] in ["xls", "xlsx"]:
         df_table = pd.read_excel(filepath, sheet_name=sheet_name, header=0, index_col=None,
-                             usecols=cols)  # about reading xlsx file
+                                 usecols=cols)  # about reading xlsx file
+        # print("--->>>columns:", df_table.columns.values)
+        # print(df_table)
     elif ext == "csv":
         df_table = pd.read_excel(filepath, header=0, index_col=None,
                                  usecols=cols)  # about reading xlsx file
     else:
-        raise Exception("Unknown input format.")
-    parent_df = df_table.dropna(axis=0).astype(int)
-    return parent_df
+        raise Exception("Unknown input format of file: {}.".format(filepath))
+    # parent_df = df_table.dropna(axis=0)
+    # return parent_df
+    return df_table
 
 
 def printArray(array):
     N = len(array)
     for i in range(N):
         if i > 0 and i % 10 == 0:
-            print("\n"+str(array[i]), end=', ')
+            print("\n" + str(array[i]), end=', ')
         else:
             print(array[i], end=', ')
     print()
@@ -94,7 +98,7 @@ def read_population_from_xlsx():
         MaleIdxs.extend(newIdxs)
         for ind in newIdxs:
             popus[ind].sex = 1
-        FemaIdxs.extend(set(UnknIdxs)-set(newIdxs))
+        FemaIdxs.extend(set(UnknIdxs) - set(newIdxs))
         # print("重新选中：", newIdxs)
         # print(MaleIdxs)
     elif len(MaleIdxs) > 18:
@@ -109,7 +113,9 @@ def read_population_from_xlsx():
     return popus, MaleIdxs, FemaIdxs
 
 
-
 if __name__ == '__main__':
     # printArray(range(35))
-    read_population_from_xlsx()
+    # get_df_from_xlsx()
+    df = pd.read_excel("../../temp_files/历代配种方案及出雏对照2021_带性别.xlsx", header=0, sheet_name=None)
+    print(list(df.keys()))
+    # read_population_from_xlsx()

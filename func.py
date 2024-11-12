@@ -6,33 +6,64 @@
 # @Software: PyCharm
 import random
 
-end_number = 15000
+
+class IDGenerator(object):
+    def __init__(self, end_number=20000, year=21):
+        self.end_number = end_number
+        self.year = year
+
+    def get_new_id(self):
+        self.end_number += 1
+        return str(self.end_number)
+
+    def get_family_id(self, y: str, m: int):
+        if y == "":
+            res = str(self.year) + "-"
+        else:
+            res = y + "-"
+        if m < 10:
+            res += "0" + str(m)
+        else:
+            res += str(m)
+        # if f < 10:
+        #     res += "0" + str(f)
+        # else:
+        #     res += str(f)
+        res += "00"
+        return res
+
+    @staticmethod
+    def get_rand_gender():
+        if random.random() < 0.09091:
+            return "1"
+        else:
+            return "0"
 
 
-def get_new_id():
-    global end_number
-    end_number += 1
-    return end_number
-
-
-def get_familyid(y: str, m: int, f: int):
-    res = y
-    if m < 10:
-        res += "0" + str(m)
-    else:
-        res += str(m)
-    if f < 10:
-        res += "0" + str(f)
-    else:
-        res += str(f)
-    return res
-
-
-def get_rand_gender():
-    if random.random() < 0.3:
-        return 1
-    else:
-        return 0
+# def get_new_id():
+#     global end_number
+#     end_number += 1
+#     return end_number
+#
+#
+# def get_familyid(y: str, m: int, f: int):
+#     res = y
+#     if m < 10:
+#         res += "0" + str(m)
+#     else:
+#         res += str(m)
+#     if f < 10:
+#         res += "0" + str(f)
+#     else:
+#         res += str(f)
+#     return res
+#
+#
+# def get_rand_gender():
+#     if random.random() < 0.3:
+#         return 1
+#     else:
+#         return 0
 
 
 class NullNameException(Exception):

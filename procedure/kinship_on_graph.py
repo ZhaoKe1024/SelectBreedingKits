@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # @Author : ZhaoKe
 # @Time : 2024-04-07 23:06
-from analyzer.commonAncestors import FamilyAnalyzer
-from procedure.xlsx2graph import build_family_graph
-from func import NullNameException
+from inbreed_lib.analyzer.commonAncestors import FamilyAnalyzer
+from inbreed_lib.procedure.xlsx2graph import build_family_graph
+from inbreed_lib.func import NullNameException
 
 
 class Kinship(object):
@@ -40,6 +40,7 @@ class Kinship(object):
             raise NullNameException(f"不存在编号为 {p1} 的个体。")
         if p2 not in self.name2index:
             raise NullNameException(f"不存在编号为 {p2} 的个体。")
+        # print("计算{}和{}的亲缘相关系数：".format(self.name2index[p1], self.name2index[p2]))
         return self.analyzer.calc_kinship_corr(ind1=self.name2index[p1],
                                                ind2=self.name2index[p2], final=0)
 

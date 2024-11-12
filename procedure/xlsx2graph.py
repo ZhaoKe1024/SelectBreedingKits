@@ -6,25 +6,25 @@
 # @Software: PyCharm
 from typing import List
 
-from analyzer.LayerGraph import LayerNetworkGraph
-from selector.entities import Vertex
-from procedure.xlsxreader import get_df_from_xlsx
+from inbreed_lib.analyzer.LayerGraph import LayerNetworkGraph
+from inbreed_lib.selector.entities import Vertex
+from inbreed_lib.procedure.xlsxreader import get_df_from_xlsx
 
 
 def read_init_vertices_from_xlsx(file_path="./历代配种方案及出雏对照2021.xlsx", sheet_name: str = "16", id_start=0,
-                                 depth=0) -> List[
-    Vertex]:
+                                 depth=0) -> List[Vertex]:
     sex_table = get_df_from_xlsx(filepath=file_path, sheet_name=sheet_name, cols=[1, 2, 3])
-    # print(sex_table.head())
+    print(sex_table.head())
     # -----------------------------------------------
     # -------------Build Vertex List-----------------
     # -----------------------------------------------
     # print(sex_table.iloc[:, 1])
     male_id_len = len(set(sex_table.iloc[:, 1]))
     female_id_len = len(set(sex_table.iloc[:, 2]))
-    # print("number of male poultry in " + sheet_name + ":" + str(male_id_len))
-    # print("number of female poultry in " + sheet_name + ":" + str(female_id_len))
+    print("number of male poultry in " + sheet_name + ":" + str(male_id_len))
+    print("number of female poultry in " + sheet_name + ":" + str(female_id_len))
     male_name_set = set()
+    female_name_set = set()
     name2id = dict()
     male_vertex_list = []
     female_veretx_list = []
@@ -32,7 +32,8 @@ def read_init_vertices_from_xlsx(file_path="./历代配种方案及出雏对照2
     for row in sex_table.itertuples():
         name = getattr(row, "公鸡号")
         family_id = getattr(row, "家系号")
-        if not name in male_name_set:
+        fname = getattr(row, "母鸡号")
+        if name not in male_name_set:
             # name2id[name] = id_start
             male_name_set.add(name)
             male_vertex_list.append(Vertex(index=id_start + male_id,
@@ -41,87 +42,91 @@ def read_init_vertices_from_xlsx(file_path="./历代配种方案及出雏对照2
                                            gender=1,
                                            family_id=family_id))
             male_id += 1
-        female_veretx_list.append(Vertex(index=id_start + male_id_len + female_id,
-                                         name=getattr(row, "母鸡号"),
-                                         depth=depth,
-                                         gender=0,
-                                         family_id=family_id))
-        name2id[name] = id_start
-        name2id[getattr(row, "母鸡号")] = male_id_len + id_start
-        female_id += 1
+            name2id[name] = id_start
+        if fname not in female_name_set:
+            female_name_set.add(fname)
+            female_veretx_list.append(Vertex(index=id_start + male_id_len + female_id,
+                                             name=fname,
+                                             depth=depth,
+                                             gender=0,
+                                             family_id=family_id))
+            female_id += 1
+            name2id[fname] = male_id_len + id_start
 
     # print("number of female poultry in " + sheet_name + ":" + str(len(female_veretx_list)))
     cur_vertex_list = male_vertex_list + female_veretx_list
+    print("len of cur vertex list:")
+    print(len(male_vertex_list), len(female_veretx_list))
+    print(len(cur_vertex_list))
     return cur_vertex_list
 
 
-def read_vertices_from_xlsx(file_path="./历代配种方案及出雏对照2021.xlsx", sheet_name: str = "16", id_start=0,
-                            depth=0) -> List[
-    Vertex]:
-    sex_table = get_df_from_xlsx(filepath=file_path, sheet_name=sheet_name, cols=[7, 8, 9, 10, 11])
-    print(sex_table.head(10))
-    # -----------------------------------------------
-    # -------------Build Vertex List-----------------
-    # -----------------------------------------------
-    # print(sex_table.iloc[:, 1])
-    male_name_set = set()
-    male_vertex_list = []
-    male_id, female_id = 0, 0
-    for row in sex_table.itertuples():
-        name = row[2]  # getattr(row, "公鸡号")
-        family_id = row[4]  # getattr(row, "家系号")
-        if not name in male_name_set:
-            # name2id[name] = id_start
-            male_name_set.add(name)
-            male_vertex_list.append(Vertex(index=id_start + male_id,
-                                           name=name,
-                                           depth=depth,
-                                           gender=1,
-                                           family_id=family_id))
-            male_id += 1
-        female_veretx_list.append(Vertex(index=id_start + male_id_len + female_id,
-                                         name=row[3],  # getattr(row, "母鸡号"),
-                                         depth=depth,
-                                         gender=0,
-                                         family_id=family_id))
-        name2id[name] = id_start
-        name2id[row[3]] = male_id_len + id_start
-        female_id += 1
-
-    male_id_len = len(set(sex_table.iloc[:, 1]))
-    female_id_len = len(set(sex_table.iloc[:, 2]))
-    # print("number of male poultry in " + sheet_name + ":" + str(male_id_len))
-    # print("number of female poultry in " + sheet_name + ":" + str(female_id_len))
-    name2id = dict()
-    female_veretx_list = []
-    for row in sex_table.itertuples():
-        name = row[2]  # getattr(row, "公鸡号")
-        family_id = row[4]  # getattr(row, "家系号")
-        if not name in male_name_set:
-            # name2id[name] = id_start
-            male_name_set.add(name)
-            male_vertex_list.append(Vertex(index=id_start + male_id,
-                                           name=name,
-                                           depth=depth,
-                                           gender=1,
-                                           family_id=family_id))
-            male_id += 1
-        female_veretx_list.append(Vertex(index=id_start + male_id_len + female_id,
-                                         name=row[3],  # getattr(row, "母鸡号"),
-                                         depth=depth,
-                                         gender=0,
-                                         family_id=family_id))
-        name2id[name] = id_start
-        name2id[row[3]] = male_id_len + id_start
-        female_id += 1
-
-    # print("number of female poultry in " + sheet_name + ":" + str(len(female_veretx_list)))
-    cur_vertex_list = male_vertex_list + female_veretx_list
-    return cur_vertex_list
+# def read_vertices_from_xlsx(file_path="./历代配种方案及出雏对照2021.xlsx", sheet_name: str = "16", id_start=0,
+#                             depth=0) -> List[Vertex]:
+#     sex_table = get_df_from_xlsx(filepath=file_path, sheet_name=sheet_name, cols=[7, 8, 9, 10, 11])
+#     print(sex_table.head(10))
+#     # -----------------------------------------------
+#     # -------------Build Vertex List-----------------
+#     # -----------------------------------------------
+#     # print(sex_table.iloc[:, 1])
+#     male_name_set = set()
+#     male_vertex_list = []
+#     male_id, female_id = 0, 0
+#     for row in sex_table.itertuples():
+#         name = row[2]  # getattr(row, "公鸡号")
+#         family_id = row[4]  # getattr(row, "家系号")
+#         if not name in male_name_set:
+#             # name2id[name] = id_start
+#             male_name_set.add(name)
+#             male_vertex_list.append(Vertex(index=id_start + male_id,
+#                                            name=name,
+#                                            depth=depth,
+#                                            gender=1,
+#                                            family_id=family_id))
+#             male_id += 1
+#         female_veretx_list.append(Vertex(index=id_start + male_id_len + female_id,
+#                                          name=row[3],  # getattr(row, "母鸡号"),
+#                                          depth=depth,
+#                                          gender=0,
+#                                          family_id=family_id))
+#         name2id[name] = id_start
+#         name2id[row[3]] = male_id_len + id_start
+#         female_id += 1
+#
+#     male_id_len = len(set(sex_table.iloc[:, 1]))
+#     female_id_len = len(set(sex_table.iloc[:, 2]))
+#     # print("number of male poultry in " + sheet_name + ":" + str(male_id_len))
+#     # print("number of female poultry in " + sheet_name + ":" + str(female_id_len))
+#     name2id = dict()
+#     female_veretx_list = []
+#     for row in sex_table.itertuples():
+#         name = row[2]  # getattr(row, "公鸡号")
+#         family_id = row[4]  # getattr(row, "家系号")
+#         if not name in male_name_set:
+#             # name2id[name] = id_start
+#             male_name_set.add(name)
+#             male_vertex_list.append(Vertex(index=id_start + male_id,
+#                                            name=name,
+#                                            depth=depth,
+#                                            gender=1,
+#                                            family_id=family_id))
+#             male_id += 1
+#         female_veretx_list.append(Vertex(index=id_start + male_id_len + female_id,
+#                                          name=row[3],  # getattr(row, "母鸡号"),
+#                                          depth=depth,
+#                                          gender=0,
+#                                          family_id=family_id))
+#         name2id[name] = id_start
+#         name2id[row[3]] = male_id_len + id_start
+#         female_id += 1
+#
+#     # print("number of female poultry in " + sheet_name + ":" + str(len(female_veretx_list)))
+#     cur_vertex_list = male_vertex_list + female_veretx_list
+#     return cur_vertex_list
 
 
 def read_vertices_edges_from_xlsx(file_path, sheet_name, pre_sheet_name,
-                                  id_start=0, depth=0, pre_name2ind: dict = None):
+                                  id_start=0, depth=0, pre_name2ind: dict = None, pre_children=None):
     cur_vertex_list = read_init_vertices_from_xlsx(file_path=file_path, sheet_name=sheet_name,
                                                    id_start=id_start, depth=depth)
     # -----------------------------------------------
@@ -132,20 +137,30 @@ def read_vertices_edges_from_xlsx(file_path, sheet_name, pre_sheet_name,
         cur_name2idx[ver.name] = ver.index
         # if sheet_name in ["17", "18"]:
         #     print(f"name:{ver.name}_index:{ver.index}")
+    # print("pre_name2idx")
+    # print(pre_name2ind)
+    # print("cur_name2idx:")
     # print(cur_name2idx)
-    pre_children = [[] for _ in range(len(pre_name2ind))]
-    edges_df = get_df_from_xlsx(filepath=file_path, sheet_name=pre_sheet_name, cols=[7, 8, 9])
-    # print(edges_df.columns)
+    #
+    # print("pre number", len(pre_name2ind))
+    for _ in cur_vertex_list:
+        pre_children.append([])
+
+    edges_df = get_df_from_xlsx(filepath=file_path, sheet_name=pre_sheet_name, cols=[7, 8, 9, 11])
+    print(edges_df.columns)
     for idx, row in enumerate(edges_df.itertuples()):
         # if sheet_name == "19":
-        # print("row:", row)
+        # print("row:", row, row[1], row[2], row[3])
         wi = str(getattr(row, "翅号")) if "翅号" in edges_df.columns else str(getattr(row, "_1"))
         # if sheet_name in ["17", "18"]:
-        #     print("row:", row)
-        #     print("wi:", wi)
+        # print("row:", row)
+        # print("wi:", wi)
         if wi in cur_name2idx:
-            fa_i = str(getattr(row, "_2"))
-            ma_i = str(getattr(row, "_3"))
+            fa_i = str(getattr(row, "_3"))
+            ma_i = str(getattr(row, "_2"))
+            # print("fa mi:", fa_i, ma_i, cur_name2idx[wi])
+            # print("pre_name2ind:", pre_name2ind[fa_i])
+            # print(pre_name2ind[ma_i])
             pre_children[pre_name2ind[fa_i]].append(cur_name2idx[wi])
             pre_children[pre_name2ind[ma_i]].append(cur_name2idx[wi])
     # for i, child_list in enumerate(pre_children):
@@ -170,6 +185,9 @@ def build_family_graph_base(file_path="./历代配种方案及出雏对照2021_�
     for i, ver in enumerate(each_vertex_list):
         vertex_layer[0].append(ver.index)
         pre_name2idx[ver.name] = i
+    map_len = len(pre_name2idx)
+    # print("pre_name2idx:")
+    # print(pre_name2idx)
     skip_id = len(each_vertex_list)
     idx += skip_id
     vertex_list.extend(each_vertex_list)
@@ -179,19 +197,24 @@ def build_family_graph_base(file_path="./历代配种方案及出雏对照2021_�
         if depth == 0:
             continue
         print("build start point and edge for sheet:", sheet_name)
-        each_vertex_list, pre_children = read_vertices_edges_from_xlsx(file_path=file_path,
-                                                                       sheet_name=sheet_list[depth],
-                                                                       pre_sheet_name=sheet_list[depth - 1],
-                                                                       id_start=idx, depth=depth,
-                                                                       pre_name2ind=pre_name2idx)
-        pre_name2idx = dict()
+        each_vertex_list, children_list = read_vertices_edges_from_xlsx(file_path=file_path,
+                                                                        sheet_name=sheet_list[depth],
+                                                                        pre_sheet_name=sheet_list[depth - 1],
+                                                                        id_start=idx, depth=depth,
+                                                                        pre_name2ind=pre_name2idx,
+                                                                        pre_children=children_list)
+        # pre_name2idx = dict()
+        # print("pre_children---------------")
+        # print(pre_children)
         for i, ver in enumerate(each_vertex_list):
             vertex_layer[depth].append(ver.index)
-            pre_name2idx[ver.name] = i
+            pre_name2idx[ver.name] = map_len + i
+        map_len = len(pre_name2idx)
         vertex_list.extend(each_vertex_list)
         skip_id = len(each_vertex_list)
         idx += skip_id
-        children_list.extend(pre_children)
+        # children_list.extend(pre_children)
+
     # 最后一层children全设置为[]
     for _ in range(len(vertex_layer[-1])):
         children_list.append([])
