@@ -136,7 +136,9 @@ class GASelector(object):
         cur_female = best_solution.vector_female[0]
         print("========----------育种方案----------==========")
         print("(家系号，雄性个体编号)：[(家系号，雌性个体编号)]")
-        print(f"{self.popus[pre_pos].family_id},{pre_pos}:[({self.popus[cur_female].family_id},{self.num_male+cur_female})", end=', ')
+        print(
+            f"{self.popus[pre_pos].family_id},{pre_pos}:[({self.popus[cur_female].family_id},{self.num_male + cur_female})",
+            end=', ')
         idx = 1
         fout = open("./result.csv", 'w', encoding="utf_8")
         while idx < len(best_solution):
@@ -146,22 +148,27 @@ class GASelector(object):
                 print(']')
                 print(f"{self.popus[cur_male].family_id},{cur_male}", ": [", end='')
                 fout.write(f"]\n{self.popus[cur_male].family_id},{cur_male}: [")
-            print(f"({self.popus[cur_female].family_id},{self.num_male+cur_female})", end=', ')
-            fout.write(f"({self.popus[cur_female].family_id},{self.num_male+cur_female}), ")
+            print(f"({self.popus[cur_female].family_id},{self.num_male + cur_female})", end=', ')
+            fout.write(f"({self.popus[cur_female].family_id},{self.num_male + cur_female}), ")
             pre_pos = cur_male
             idx += 1
         print("]")
         fout.write('\n')
         fout.close()
 
-    def scheduler(self):
+    def scheduler(self, mode="min"):
         self.init_population()
         for iter_idx in range(self.num_iter):
             for solution in self.solutions:
                 # calculate population inbreed coefficient by 有效 population 含量
                 # print(solution.vector_male)
                 # print(solution)
-                solution.fitness_value = calculate_fitness(solution, self.kinship_matrix, mode=self.fitmode)
+                if mode == "min":
+                    solution.fitness_value = calculate_fitness(solution, self.kinship_matrix, mode=self.fitmode)
+                elif mode == "max":
+                    solution.fitness_value = -calculate_fitness(solution, self.kinship_matrix, mode=self.fitmode)
+                else:
+                    raise Exception("Unknown mode {}.".format(mode))
             # self.elite_reserve()
 
             self.solutions.sort(key=lambda x: x.fitness_value)
@@ -181,9 +188,15 @@ class GASelector(object):
 
         best_solution = None
         best_fitness = np.inf
+        # if mode == "min":
+        #     best_fitness = np.inf
+        # elif mode == "max":
+        #     best_fitness = -np.inf
+        # else:
+        #     raise Exception("Unknown mode {}.".format(mode))
         for solution in self.solutions:
             # calculate population inbreed coefficient by 有效 population 含量
-            fvalue = calculate_fitness(solution, self.kinship_matrix, mode=self.fitmode)
+            fvalue = -calculate_fitness(solution, self.kinship_matrix, mode=self.fitmode)
             if fvalue < best_fitness:
                 best_fitness = fvalue
                 best_solution = solution

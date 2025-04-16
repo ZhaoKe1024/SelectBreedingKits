@@ -64,25 +64,27 @@ def get_graph_from_data(file_path):
     # # print()
     # np.random.seed(42)  # 2024-04-02
     # kinship_matrix = 1 / 16 + 1 / 16 * np.random.randn(len(male_idxs), len(female_idxs))
-    df = pd.read_excel(file_path, header=0, sheet_name=None, usecols=[1, 2, 3, 7, 11])
+    df = pd.read_excel(file_path, header=0, sheet_name=None, usecols=[1, 2, 3], engine='openpyxl')
     # print(df)
     sheet_list = list(df.keys())
-    # print(sheet_list)
+    while sheet_list[-1][:5] == "Sheet":
+        del sheet_list[-1]
+    print("sheet list:", sheet_list)
     # for item in sheet_list:
     #     if item
     vertex_list, vertex_layer, children_list, pre_name2idx = build_family_graph_base(
         file_path=file_path,
         sheet_list=sheet_list)
     N = len(vertex_list)
-    # print("pre_name2idx:")
-    # print(pre_name2idx)
-    # print("-------children-0---------")
-    # for idx, cd in enumerate(children_list):
-    #     print(idx, ": ", cd)
+    print("pre_name2idx:")
+    print(pre_name2idx)
+    print("-------children-0---------")
+    for idx, cd in enumerate(children_list):
+        print(idx, ": ", cd)
     # ------------Poultry read and build-------------------------
     edges_df = get_df_from_xlsx(filepath=file_path, sheet_name=sheet_list[-1],
                                 cols=[7, 8, 9, 10, 11])
-    print(edges_df.columns)
+    print("edge columns", edges_df.columns)
     print(edges_df)
     # new_children = []
     new_vertices = []
@@ -90,10 +92,13 @@ def get_graph_from_data(file_path):
         # if sheet_name == "19":
         # print("row:", row)
         wi = str(getattr(row, "翅号")) if "翅号" in edges_df.columns else str(getattr(row, "_1"))
-        fa_i = str(getattr(row, "_2"))
-        ma_i = str(getattr(row, "_3"))
+        fa_i = str(getattr(row, "父号"))
+        ma_i = str(getattr(row, "母号"))
         f_i = str(getattr(row, "_4"))
-        gd = str(getattr(row, "性别"))
+        if "性别" in edges_df.columns:
+            gd = str(getattr(row, "性别"))
+        else:
+            gd = -1
         vertex_list.append(Vertex(index=N + idx, name=wi, depth=0, family_id=f_i, gender=gd))
         children_list.append([])
         new_vertices.append(Vertex(index=N + idx, name=wi, depth=0, family_id=f_i, gender=gd))
@@ -107,7 +112,7 @@ def get_graph_from_data(file_path):
 
     print("len:", len(vertex_list))
     print([j.name for j in vertex_list])
-    idx2year = {0: "2014", 1: "2015", 2: "2016", 3: "2017", 4: "2018", 5: "2019", 6: 2020}
+    idx2year = {0: "2014", 1: "2015", 2: "2016", 3: "2017", 4: "2018", 5: "2019", 6: "2020"}
     for idx, item in enumerate(vertex_layer):
         print(idx2year[idx])
         print([vertex_list[j].name for j in item])

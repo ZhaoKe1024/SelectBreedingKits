@@ -13,7 +13,9 @@ from inbreed_lib.procedure.xlsxreader import get_df_from_xlsx
 
 def read_init_vertices_from_xlsx(file_path="./历代配种方案及出雏对照2021.xlsx", sheet_name: str = "16", id_start=0,
                                  depth=0) -> List[Vertex]:
-    sex_table = get_df_from_xlsx(filepath=file_path, sheet_name=sheet_name, cols=[1, 2, 3])
+    sex_table = get_df_from_xlsx(filepath=file_path, sheet_name=sheet_name, cols=[1, 2, 3],
+                                 types={"家系号": str, "公鸡号": str, "母鸡号": str})
+    sex_table.dropna(how="all", inplace=True)
     print(sex_table.head())
     # -----------------------------------------------
     # -------------Build Vertex List-----------------
@@ -31,8 +33,10 @@ def read_init_vertices_from_xlsx(file_path="./历代配种方案及出雏对照2
     male_id, female_id = 0, 0
     for row in sex_table.itertuples():
         name = getattr(row, "公鸡号")
-        family_id = getattr(row, "家系号")
-        fname = getattr(row, "母鸡号")
+        # if name
+        name = name.split('.')[0]
+        family_id = getattr(row, "家系号").split('.')[0]
+        fname = getattr(row, "母鸡号").split('.')[0]
         if name not in male_name_set:
             # name2id[name] = id_start
             male_name_set.add(name)
@@ -127,8 +131,10 @@ def read_init_vertices_from_xlsx(file_path="./历代配种方案及出雏对照2
 
 def read_vertices_edges_from_xlsx(file_path, sheet_name, pre_sheet_name,
                                   id_start=0, depth=0, pre_name2ind: dict = None, pre_children=None):
+    print("read points from:{}.".format(sheet_name))
     cur_vertex_list = read_init_vertices_from_xlsx(file_path=file_path, sheet_name=sheet_name,
                                                    id_start=id_start, depth=depth)
+
     # -----------------------------------------------
     # --------------Build Edge List------------------
     # -----------------------------------------------
@@ -137,30 +143,35 @@ def read_vertices_edges_from_xlsx(file_path, sheet_name, pre_sheet_name,
         cur_name2idx[ver.name] = ver.index
         # if sheet_name in ["17", "18"]:
         #     print(f"name:{ver.name}_index:{ver.index}")
-    # print("pre_name2idx")
-    # print(pre_name2ind)
-    # print("cur_name2idx:")
-    # print(cur_name2idx)
+    print("pre_name2idx")
+    print(pre_name2ind)
+    print("cur_name2idx:")
+    print(cur_name2idx)
     #
-    # print("pre number", len(pre_name2ind))
-    for _ in cur_vertex_list:
-        pre_children.append([])
-
-    edges_df = get_df_from_xlsx(filepath=file_path, sheet_name=pre_sheet_name, cols=[7, 8, 9, 11])
+    print("pre number", len(pre_name2ind))
+    print("children list length:{}.".format(len(pre_children)))
+    print("read edges from {}.".format(pre_sheet_name))
+    edges_df = get_df_from_xlsx(filepath=file_path, sheet_name=pre_sheet_name, cols=[7, 8, 9, 11],
+                                types={"翅号": str, "父号": str, "母号": str})
+    edges_df.dropna(how="all", inplace=True)
     print(edges_df.columns)
     for idx, row in enumerate(edges_df.itertuples()):
         # if sheet_name == "19":
         # print("row:", row, row[1], row[2], row[3])
         wi = str(getattr(row, "翅号")) if "翅号" in edges_df.columns else str(getattr(row, "_1"))
+        wi = wi.split('.')[0]
         # if sheet_name in ["17", "18"]:
         # print("row:", row)
         # print("wi:", wi)
         if wi in cur_name2idx:
-            fa_i = str(getattr(row, "_3"))
-            ma_i = str(getattr(row, "_2"))
-            # print("fa mi:", fa_i, ma_i, cur_name2idx[wi])
-            # print("pre_name2ind:", pre_name2ind[fa_i])
-            # print(pre_name2ind[ma_i])
+            fa_i = str(getattr(row, "父号")).split('.')[0]
+            ma_i = str(getattr(row, "母号")).split('.')[0]
+            print("fa mi:", fa_i, ma_i, cur_name2idx[wi])
+            print("pre_name2ind:", pre_name2ind[fa_i], pre_name2ind[ma_i])
+            print(pre_children[pre_name2ind[fa_i]])
+            print(pre_name2ind[ma_i])
+            print(pre_children[pre_name2ind[ma_i]])
+            print(cur_name2idx[wi])
             pre_children[pre_name2ind[fa_i]].append(cur_name2idx[wi])
             pre_children[pre_name2ind[ma_i]].append(cur_name2idx[wi])
     # for i, child_list in enumerate(pre_children):
@@ -193,10 +204,14 @@ def build_family_graph_base(file_path="./历代配种方案及出雏对照2021_�
     vertex_list.extend(each_vertex_list)
     # ============第二代开始的点，和上一代的边-------------
     children_list = []
+    for _ in vertex_list:
+        children_list.append([])
     for depth, sheet_name in enumerate(sheet_list):
         if depth == 0:
             continue
         print("build start point and edge for sheet:", sheet_name)
+        if sheet_name[:5] == "Sheet":
+            continue
         each_vertex_list, children_list = read_vertices_edges_from_xlsx(file_path=file_path,
                                                                         sheet_name=sheet_list[depth],
                                                                         pre_sheet_name=sheet_list[depth - 1],
@@ -206,6 +221,9 @@ def build_family_graph_base(file_path="./历代配种方案及出雏对照2021_�
         # pre_name2idx = dict()
         # print("pre_children---------------")
         # print(pre_children)
+
+        for _ in each_vertex_list:
+            children_list.append([])
         for i, ver in enumerate(each_vertex_list):
             vertex_layer[depth].append(ver.index)
             pre_name2idx[ver.name] = map_len + i
@@ -215,19 +233,19 @@ def build_family_graph_base(file_path="./历代配种方案及出雏对照2021_�
         idx += skip_id
         # children_list.extend(pre_children)
 
-    # 最后一层children全设置为[]
-    for _ in range(len(vertex_layer[-1])):
-        children_list.append([])
+    # # 最后一层children全设置为[]
+    # for _ in range(len(vertex_layer[-1])):
+    #     children_list.append([])
 
-    # for i, ver in enumerate(vertex_list):
-    #     print(i, ver)
-    # print(sum([len(item) for item in vertex_layer]))
-    # print(len(children_list))
+    for i, ver in enumerate(vertex_list):
+        print(i, ver)
+    print(sum([len(item) for item in vertex_layer]))
+    print(len(children_list))
 
-    # for i, child_list in enumerate(children_list):
-    #     print(vertex_list[i].name, ":", [vertex_list[val].name for val in child_list])
-    #     if i > 100:
-    #         break
+    for i, child_list in enumerate(children_list):
+        print(vertex_list[i].name, ":", [vertex_list[val].name for val in child_list])
+        if i > 100:
+            break
     return vertex_list, vertex_layer, children_list, pre_name2idx
 
 
